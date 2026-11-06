@@ -7,6 +7,7 @@ import { syncUi } from './toolbar';
 import { applyView } from './view';
 import './editor';
 import './pointer';
+import './wheel';
 import './keys';
 import './clipboard';
 
