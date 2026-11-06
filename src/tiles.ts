@@ -86,7 +86,7 @@ export function changed(): void {
   notify();
 }
 
-function worldRect(t: Tile) {
+export function worldRect(t: Tile) {
   const el = els.get(t.id);
   return { x: t.x, y: t.y, w: el?.offsetWidth ?? t.size, h: el?.offsetHeight ?? t.size };
 }

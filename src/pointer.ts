@@ -1,11 +1,13 @@
 // ポインタ操作（移動・選択・パン・ピンチ・ダブルクリック・長押し・ホイール）
 
 import { pushUndo, tiles, view } from './state';
-import { DRAG_PX, MAX_S, MIN_S } from './config';
+import { DRAG_PX, MAX_S, MIN_S, SNAP_PX } from './config';
 import { marquee, stage } from './dom';
 import { openEdit, openNew } from './editor';
 import { closeMenu, showBgMenu, showTileMenu } from './menu';
+import { findSnap, type Rect, type Snap, type Target } from './snap';
 import {
+  bounds,
   bringToFront,
   changed,
   els,
@@ -13,12 +15,14 @@ import {
   select,
   selected,
   selectedTiles,
+  worldRect,
 } from './tiles';
 import { clamp } from './util';
 import { applyView, cancelTween, screenToWorld, zoomAt } from './view';
 
 function openContextAt(x: number, y: number, tileEl: Element | null): void {
   cancelLongPress();
+  endSnap(drag);
   drag = null;
   pointers.clear();
   stage.classList.remove('dragging', 'panning');
@@ -40,10 +44,18 @@ type Drag =
       additive: boolean;
       wasSelected: boolean;
       orig: Map<string, { x: number; y: number }>;
+      // 横スナップ用（動かし始めた時点で確定する）
+      group: Rect | null; // 動かしている文字の範囲
+      others: Target[]; // 吸着先の候補（動かさない文字）
+      moving: HTMLElement[];
+      snap: Snap | null; // 今の吸着状態
+      glideTimer: number;
     }
   | { kind: 'pan'; startX: number; startY: number; vx: number; vy: number; moved: boolean; bgTap: boolean }
   | { kind: 'marquee'; startX: number; startY: number; base: Set<string>; moved: boolean; additive: boolean }
   | { kind: 'pinch'; dist: number; sx: number; sy: number; s: number; wx: number; wy: number };
+
+type TilesDrag = Extract<Drag, { kind: 'tiles' }>;
 
 const pointers = new Map<number, { x: number; y: number }>();
 
@@ -59,6 +71,27 @@ let lpTimer = 0;
 
 function cancelLongPress(): void {
   window.clearTimeout(lpTimer);
+}
+
+/** 吸着先が変わった：ぬるっと動かし、吸着先に点線を出す */
+function setSnap(d: TilesDrag, next: Snap | null): void {
+  if (d.snap) els.get(d.snap.id)?.classList.remove('snap-target');
+  d.snap = next;
+  for (const el of d.moving) el.classList.add('glide');
+  window.clearTimeout(d.glideTimer);
+  d.glideTimer = window.setTimeout(() => {
+    for (const el of d.moving) el.classList.remove('glide');
+  }, 160);
+  if (next) {
+    els.get(next.id)?.classList.add('snap-target');
+  }
+}
+
+/** ドラッグが終わる・中断したとき、吸着先の点線表示を消す */
+function endSnap(d: Drag | null): void {
+  if (d?.kind !== 'tiles' || !d.snap) return;
+  els.get(d.snap.id)?.classList.remove('snap-target');
+  d.snap = null;
 }
 
 export function setSpace(on: boolean): void {
@@ -115,7 +148,21 @@ stage.addEventListener('pointerdown', (e) => {
     }
     const orig = new Map<string, { x: number; y: number }>();
     for (const t of selectedTiles()) orig.set(t.id, { x: t.x, y: t.y });
-    drag = { kind: 'tiles', id, startX: e.clientX, startY: e.clientY, moved: false, additive, wasSelected, orig };
+    drag = {
+      kind: 'tiles',
+      id,
+      startX: e.clientX,
+      startY: e.clientY,
+      moved: false,
+      additive,
+      wasSelected,
+      orig,
+      group: null,
+      others: [],
+      moving: [],
+      snap: null,
+      glideTimer: 0,
+    };
     return;
   }
 
@@ -161,13 +208,29 @@ stage.addEventListener('pointermove', (e) => {
       bringToFront(list);
       for (const t of list) els.get(t.id)?.classList.remove('spawn');
       stage.classList.add('dragging');
+      // 横スナップの準備：動かす範囲と、動かさない文字の位置を一度だけ測る
+      d.group = bounds(list);
+      d.others = [...tiles.values()].filter((t) => !d.orig.has(t.id)).map((t) => ({ id: t.id, ...worldRect(t) }));
+      d.moving = list.map((t) => els.get(t.id)).filter((el): el is HTMLDivElement => !!el);
     }
+
+    // 横スナップ（Alt を押している間は無効）
+    let sx = 0;
+    let sy = 0;
+    if (d.group) {
+      const raw = { x: d.group.x + dx / view.s, y: d.group.y + dy / view.s, w: d.group.w, h: d.group.h };
+      const found = e.altKey ? null : findSnap(raw, d.others, SNAP_PX / view.s, d.snap);
+      if (found?.id !== d.snap?.id || found?.side !== d.snap?.side) setSnap(d, found);
+      sx = found?.dx ?? 0;
+      sy = found?.dy ?? 0;
+    }
+
     for (const [id, o] of d.orig) {
       const t = tiles.get(id);
       const el = els.get(id);
       if (!t || !el) continue;
-      t.x = o.x + dx / view.s;
-      t.y = o.y + dy / view.s;
+      t.x = o.x + dx / view.s + sx;
+      t.y = o.y + dy / view.s + sy;
       el.style.translate = `${t.x}px ${t.y}px`;
     }
     changed();
@@ -220,6 +283,7 @@ function onPointerEnd(e: PointerEvent): void {
   const ok = e.type === 'pointerup';
 
   if (d.kind === 'tiles') {
+    endSnap(d);
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
     if (d.additive) {
@@ -279,6 +343,7 @@ stage.addEventListener('contextmenu', (e) => {
 
 function startPinch(): void {
   cancelLongPress();
+  endSnap(drag);
   stage.classList.remove('dragging', 'panning');
   const [a, b] = [...pointers.values()];
   const sx = (a.x + b.x) / 2;

@@ -20,6 +20,8 @@ export const MAX_SIZE = 400;
 
 export const DRAG_PX = 4;
 
+export const SNAP_PX = 14; // 横スナップが効く距離（画面上のpx）
+
 export const FONT = '"Noto Sans JP", "Noto Sans", sans-serif';
 
 export const WEIGHT = 500;

@@ -131,6 +131,15 @@ body {
 .tile.editing {
   visibility: hidden;
 }
+/* 横スナップの吸着先（点線）と、吸着・解除のときのぬるっとした動き */
+.tile.snap-target {
+  outline: calc(1.5px * var(--inv, 1)) dashed var(--accent);
+}
+.tile.glide {
+  transition:
+    translate 0.14s cubic-bezier(0.2, 0.9, 0.3, 1),
+    background-color 0.12s;
+}
 #stage.dragging .tile {
   cursor: grabbing;
 }
