@@ -2,6 +2,8 @@
 
 ブレスト用の、文字を並べ替えるだけのシンプルなキャンバス。Vite + TypeScript（依存は実行時ゼロ）。
 
+<img width="1863" height="1077" alt="image" src="https://github.com/user-attachments/assets/2f4d69ce-3fab-43f6-97ff-2d345732fee2" />
+
 ## 使い方
 
 ```sh
