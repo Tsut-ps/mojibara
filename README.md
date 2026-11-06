@@ -68,7 +68,8 @@ Node は 20.19 以上（または 22.12 以上）が必要です。古い場合�
   - `menu.ts` メニューの描画 / `menus.ts` 右クリックメニューなどの中身（commands から組み立て）
   - `toolbar.ts` ツールバー・確認ダイアログ / `toast.ts` 画面下の通知（「元に戻す」付き）
   - `clipboard.ts` コピー・切り取り・貼り付け / `data.ts` JSON の書き出し・読み込み
-- `src/sound.ts` 効果音（Web Audio で合成。操作ごとの音もここ）
+- `src/sound/` 効果音（Web Audio で合成）
+  - `index.ts` オン/オフ・再生の窓口 / `recipes.ts` スナップ音と操作ごとの音のレシピ / `parts.ts` 音の素材（当たり・胴鳴り・マレットなど）
 
 新しい操作は `commands.ts` に 1 つ足せば、キーとメニューの両方に反映されます（操作表は README / ヘルプにも追記）。
 
