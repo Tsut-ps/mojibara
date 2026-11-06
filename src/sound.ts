@@ -70,7 +70,7 @@ function envelope(g: GainNode, t: number, peak: number, dur: number, attack: num
  */
 export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number): void {
   const out = c.createGain();
-  out.gain.value = 0.99;
+  out.gain.value = 0.64; // 以前の 65%
   out.connect(dest);
 
   const knock = (at: number, hz: number, peak: number, dur: number) => {
