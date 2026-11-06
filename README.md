@@ -7,10 +7,10 @@
 ```sh
 npm install
 npm run dev      # 開発サーバー
-npm run build    # dist/index.html（1ファイル）を生成
+npm run build    # dist/ に静的ファイルを生成
 ```
 
-`dist/index.html` はそれだけで動きます。フォント（Noto Sans JP）は Google Fonts から読み込みます。
+`dist/` を静的ホスティング（Cloudflare Pages など）に置けば動きます。フォント（Noto Sans JP）は Google Fonts から読み込みます。
 
 ## 操作
 
