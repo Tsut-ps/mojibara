@@ -53,16 +53,20 @@ Node は 20.19 以上（または 22.12 以上）が必要です。古い場合�
 - `src/view.ts` パン・ズーム・ドット背景
 - `src/editor.ts` 入力欄（新規入力 / 一文字編集）
 - `src/pointer.ts` ドラッグ・パン・ピンチ・ホイール・長押し
-- `src/keys.ts` キーボードショートカット
+- `src/commands.ts` 操作の定義（名前・アイコン・ショートカット・実行を 1 か所に集約）
+- `src/keys.ts` キーボードショートカット（commands から照合）
 - `src/snap.ts` 横スナップ・隣接判定の計算（座標だけを扱う）
 - `src/arrange.ts` 整列・ばらまきの位置計算（座標だけを扱う）
 - `src/clipboard.ts` コピー・切り取り・貼り付け
 - `src/data.ts` JSON の書き出し・読み込み
 - `src/toast.ts` 画面下の通知（「元に戻す」付き）
 - `src/sound.ts` 効果音（Web Audio で合成）
-- `src/menu.ts` 右クリックメニュー
+- `src/menu.ts` メニューの描画
+- `src/menus.ts` 右クリックメニューなどの中身（commands から組み立て）
 - `src/toolbar.ts` ツールバー・確認ダイアログ
 - `src/dom.ts` / `src/config.ts` / `src/util.ts` DOM 参照・定数・汎用関数
 - `src/style.css` 見た目（ライト/ダーク自動切替）
+
+新しい操作は `commands.ts` に 1 つ足せば、キーとメニューの両方に反映されます（操作表は README / ヘルプにも追記）。
 
 依存は一方向です（循環なし）。`tiles` は表示やツールバーを知らず、変更は `onChange` で通知します。

@@ -4,7 +4,8 @@ import { pushUndo, tiles, view } from './state';
 import { DRAG_PX, LIFT_MAX, MAX_S, MIN_S, SNAP_PX } from './config';
 import { marquee, stage } from './dom';
 import { openEdit, openNew } from './editor';
-import { closeMenu, showBgMenu, showTileMenu } from './menu';
+import { closeMenu } from './menu';
+import { showBgMenu, showTileMenu } from './menus';
 import { findSnap, type Rect, type Snap, type Target } from './snap';
 import { playSnap, unlockAudio } from './sound';
 import {

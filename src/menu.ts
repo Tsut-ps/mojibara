@@ -1,32 +1,16 @@
-// 右クリックメニュー
+// メニューの描画（中身は menus.ts が commands から組み立てる）
 
 import { COLORS } from './state';
-import { MOD } from './config';
-import { byId, menu, svg } from './dom';
-import { exportFile, importFile } from './data';
-import { editSelected, openNew } from './editor';
-import {
-  deleteSelected,
-  duplicateSelected,
-  lineUpSelected,
-  resizeSelected,
-  scatterSelected,
-  selectAll,
-  selectConnected,
-  selectedTiles,
-  setColor,
-} from './tiles';
-import { askDeleteAll } from './toolbar';
+import { menu, svg } from './dom';
 import { clamp } from './util';
-import { fitAll } from './view';
 
-type MenuEntry =
+export type MenuEntry =
   | { type: 'item'; label: string; icon: string; hint?: string; danger?: boolean; keep?: boolean; run: () => void }
   | { type: 'sep' }
   | { type: 'caption'; text: string }
-  | { type: 'colors'; current: string | null };
+  | { type: 'colors'; current: string | null; titles: string[]; pick: (key: string) => void };
 
-function showMenu(x: number, y: number, entries: MenuEntry[]): void {
+export function showMenu(x: number, y: number, entries: MenuEntry[]): void {
   menu.replaceChildren();
   for (const en of entries) {
     if (en.type === 'sep') {
@@ -45,11 +29,11 @@ function showMenu(x: number, y: number, entries: MenuEntry[]): void {
         const b = document.createElement('button');
         b.className = 'sw' + (en.current === c.key ? ' current' : '');
         b.style.setProperty('--c', `var(--c-${c.key})`);
-        b.title = `${c.label}（${i + 1}）`;
+        b.title = en.titles[i];
         b.setAttribute('aria-label', c.label);
         b.addEventListener('click', () => {
           closeMenu();
-          setColor(c.key);
+          en.pick(c.key);
         });
         row.appendChild(b);
       });
@@ -78,47 +62,6 @@ function showMenu(x: number, y: number, entries: MenuEntry[]): void {
 export function closeMenu(): void {
   menu.hidden = true;
 }
-
-export function showTileMenu(x: number, y: number): void {
-  const list = selectedTiles();
-  const n = list.length;
-  const colors = new Set(list.map((t) => t.color));
-  const entries: MenuEntry[] = [];
-  if (n > 1) entries.push({ type: 'caption', text: `${n}文字を選択中` });
-  entries.push({ type: 'colors', current: colors.size === 1 ? [...colors][0] : null });
-  entries.push({ type: 'sep' });
-  entries.push({ type: 'item', label: '大きく', icon: 'grow', hint: '+', keep: true, run: () => resizeSelected(1.25) });
-  entries.push({ type: 'item', label: '小さく', icon: 'shrink', hint: '-', keep: true, run: () => resizeSelected(0.8) });
-  if (n === 1) entries.push({ type: 'item', label: '編集', icon: 'edit', hint: 'Enter', run: editSelected });
-  if (n > 1) {
-    entries.push({ type: 'item', label: '一列に整列', icon: 'align', hint: 'L', run: lineUpSelected });
-    entries.push({ type: 'item', label: 'ばらまく', icon: 'shuffle', hint: 'S', run: scatterSelected });
-  }
-  entries.push({ type: 'item', label: 'つながった文字も選択', icon: 'link', hint: 'W', run: selectConnected });
-  entries.push({ type: 'item', label: '複製', icon: 'copy', hint: `${MOD}D`, run: duplicateSelected });
-  entries.push({ type: 'sep' });
-  entries.push({ type: 'item', label: '削除', icon: 'trash', hint: 'Del', danger: true, run: deleteSelected });
-  showMenu(x, y, entries);
-}
-
-export function showBgMenu(x: number, y: number): void {
-  showMenu(x, y, [
-    { type: 'item', label: 'ここに入力', icon: 'type', run: () => setTimeout(() => openNew(x, y), 0) },
-    { type: 'item', label: 'すべて選択', icon: 'select', hint: `${MOD}A`, run: selectAll },
-    { type: 'item', label: '全体を表示', icon: 'fit', run: fitAll },
-    { type: 'sep' },
-    { type: 'item', label: 'すべて削除', icon: 'trash', danger: true, run: askDeleteAll },
-  ]);
-}
-
-// 右上のボタン：ファイルへの書き出し / 読み込み
-byId('data').addEventListener('click', (e) => {
-  const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  showMenu(r.right, r.bottom + 6, [
-    { type: 'item', label: 'ファイルに書き出し（JSON）', icon: 'download', run: exportFile },
-    { type: 'item', label: 'ファイルから読み込み（JSON）', icon: 'upload', run: importFile },
-  ]);
-});
 
 // 外側を押したらメニューを閉じる
 document.addEventListener(
