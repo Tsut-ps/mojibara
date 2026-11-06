@@ -44,7 +44,7 @@ type Drag =
       startY: number;
       moved: boolean;
       additive: boolean;
-      together: boolean; // Ctrl/⌘：押した文字につながった文字ごと動かす
+      together: boolean; // Shift：押した文字につながった文字ごと動かす
       wasSelected: boolean;
       orig: Map<string, { x: number; y: number }>;
       // 横スナップ用（動かし始めた時点で確定する）
@@ -144,8 +144,8 @@ stage.addEventListener('pointerdown', (e) => {
     return;
   }
 
-  const additive = e.shiftKey; // Shift：選択に追加
-  const together = e.metaKey || e.ctrlKey; // Ctrl/⌘：つながった文字ごと動かす
+  const together = e.shiftKey; // Shift：押した文字につながった文字ごと動かす
+  const additive = e.metaKey || e.ctrlKey; // Ctrl/⌘：選択に追加 / 外す
 
   if (tileEl instanceof HTMLElement && tileEl.dataset.id) {
     const id = tileEl.dataset.id;
@@ -183,15 +183,16 @@ stage.addEventListener('pointerdown', (e) => {
     return;
   }
 
-  // マウス・ペン：背景のドラッグは範囲選択（Shift などで今の選択に追加）。タッチは下の「画面移動」
+  // マウス・ペン：背景のドラッグは範囲選択（Shift・Ctrl/⌘ で今の選択に追加）。タッチは下の「画面移動」
   if (e.pointerType !== 'touch') {
+    const bgAdditive = e.shiftKey || e.metaKey || e.ctrlKey;
     drag = {
       kind: 'marquee',
       startX: e.clientX,
       startY: e.clientY,
-      base: new Set(additive ? selected : []),
+      base: new Set(bgAdditive ? selected : []),
       moved: false,
-      additive,
+      additive: bgAdditive,
     };
     return;
   }
