@@ -1,4 +1,4 @@
-// 効果音（積み木が「コツッ」とはまる音）。音声ファイルは使わず、Web Audio で合成する。
+// 効果音（積み木が「カ・ト・チッ」とはまる音）。音声ファイルは使わず、Web Audio で合成する。
 
 const STORAGE_KEY = 'mojibara:sound';
 
@@ -55,45 +55,54 @@ function noiseBuffer(c: BaseAudioContext): AudioBuffer {
   return noise;
 }
 
+/** 立ち上がりが速く、指数的に消える音量の形 */
+function envelope(g: GainNode, t: number, peak: number, dur: number, attack: number): void {
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(peak, t + attack);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+}
+
 /**
- * 木の積み木がはまる音を t 秒の時点から鳴らす。
- * ① ごく短いノイズ（当たりのコツッ）② 木の胴鳴り（低めの音が素早く減衰）
- * pitch は 1 前後の値で、毎回少し変えると自然に聞こえる。
+ * 積み木がはまる音を t 秒の時点から鳴らす。三拍が約 30 ミリ秒でつながる。
+ * 「か」＝帯域ノイズの当たり、「と」＝低い胴鳴り（音程が落ちる）、
+ * 「ち」＝最後の小さな留め金（高めで少し上向き）
+ * pitch は 1 前後の値で、毎回少しずつ変えると自然に聞こえる。
  */
 export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number, pitch = 1): void {
   const out = c.createGain();
-  out.gain.value = 0.65;
+  out.gain.value = 0.99;
   out.connect(dest);
 
-  const hit = c.createBufferSource();
-  hit.buffer = noiseBuffer(c);
-  const band = c.createBiquadFilter();
-  band.type = 'bandpass';
-  band.frequency.value = 2400 * pitch;
-  band.Q.value = 0.9;
-  const hitGain = c.createGain();
-  hitGain.gain.setValueAtTime(0.0001, t);
-  hitGain.gain.exponentialRampToValueAtTime(0.5, t + 0.002);
-  hitGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-  hit.connect(band).connect(hitGain).connect(out);
-  hit.start(t);
-  hit.stop(t + 0.05);
-
-  const body = (freq: number, peak: number, dur: number) => {
+  const knock = (at: number, hz: number, peak: number, dur: number) => {
+    const src = c.createBufferSource();
+    src.buffer = noiseBuffer(c);
+    const band = c.createBiquadFilter();
+    band.type = 'bandpass';
+    band.frequency.value = hz * pitch;
+    band.Q.value = 0.8;
+    const g = c.createGain();
+    envelope(g, at, peak, dur, 0.001);
+    src.connect(band).connect(g).connect(out);
+    src.start(at);
+    src.stop(at + dur + 0.02);
+  };
+  const tone = (at: number, from: number, to: number, peak: number, dur: number, attack: number) => {
     const osc = c.createOscillator();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, t);
-    osc.frequency.exponentialRampToValueAtTime(freq * 0.82, t + dur);
+    osc.frequency.setValueAtTime(from * pitch, at);
+    osc.frequency.exponentialRampToValueAtTime(to * pitch, at + dur);
     const g = c.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(peak, t + 0.002);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    envelope(g, at, peak, dur, attack);
     osc.connect(g).connect(out);
-    osc.start(t);
-    osc.stop(t + dur + 0.02);
+    osc.start(at);
+    osc.stop(at + dur + 0.02);
   };
-  body(560 * pitch, 0.32, 0.09);
-  body(1380 * pitch, 0.12, 0.045);
+
+  knock(t, 2200, 0.35, 0.012); // か
+  tone(t + 0.004, 900, 260, 0.38, 0.06, 0.002); // と
+  const u = t + 0.032;
+  knock(u, 3000, 0.16, 0.008); // ち
+  tone(u, 2200, 2200 * 1.12, 0.24, 0.024, 0.001);
 }
 
 /** スナップ音。連続して鳴りすぎないよう間隔をあける */
