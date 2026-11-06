@@ -43,9 +43,8 @@ type Drag =
       startX: number;
       startY: number;
       moved: boolean;
-      additive: boolean;
-      together: boolean; // Shift：押した文字につながった文字ごと動かす
-      wasSelected: boolean;
+      together: Set<string> | null; // Shift・Ctrl/⌘：押した文字につながった文字（選択に加えた分）
+      togetherWas: boolean; // それらがもともと全部選択されていたか（動かさず押したとき、外す判断に使う）
       orig: Map<string, { x: number; y: number }>;
       // 横スナップ用（動かし始めた時点で確定する）
       group: Rect | null; // 動かしている文字の範囲
@@ -144,21 +143,19 @@ stage.addEventListener('pointerdown', (e) => {
     return;
   }
 
-  const together = e.shiftKey; // Shift：押した文字につながった文字ごと動かす
-  const additive = e.metaKey || e.ctrlKey; // Ctrl/⌘：選択に追加 / 外す
+  const modifier = e.shiftKey || e.metaKey || e.ctrlKey; // Shift・Ctrl/⌘ のどちらでも同じ
 
   if (tileEl instanceof HTMLElement && tileEl.dataset.id) {
     const id = tileEl.dataset.id;
-    const wasSelected = selected.has(id);
-    if (together) {
-      // すでに選んでいる文字の中を押したなら選択全体から、そうでなければ押した文字から、つながりをたどる
-      select(connectedOf(wasSelected ? [...selected] : [id]));
-    } else if (additive) {
-      if (!wasSelected) {
-        selected.add(id);
-        refreshSelection();
-      }
-    } else if (!wasSelected) {
+    let together: Set<string> | null = null;
+    let togetherWas = false;
+    if (modifier) {
+      // 押した文字につながった文字ごと、いまの選択に加える（ドラッグすればまとめて動く）
+      together = connectedOf([id]);
+      togetherWas = [...together].every((g) => selected.has(g));
+      for (const g of together) selected.add(g);
+      refreshSelection();
+    } else if (!selected.has(id)) {
       select([id]);
     }
     const orig = new Map<string, { x: number; y: number }>();
@@ -169,9 +166,8 @@ stage.addEventListener('pointerdown', (e) => {
       startX: e.clientX,
       startY: e.clientY,
       moved: false,
-      additive,
       together,
-      wasSelected,
+      togetherWas,
       orig,
       group: null,
       others: [],
@@ -185,7 +181,7 @@ stage.addEventListener('pointerdown', (e) => {
 
   // マウス・ペン：背景のドラッグは範囲選択（Shift・Ctrl/⌘ で今の選択に追加）。タッチは下の「画面移動」
   if (e.pointerType !== 'touch') {
-    const bgAdditive = e.shiftKey || e.metaKey || e.ctrlKey;
+    const bgAdditive = modifier;
     drag = {
       kind: 'marquee',
       startX: e.clientX,
@@ -308,10 +304,10 @@ function onPointerEnd(e: PointerEvent): void {
     endDrag(d);
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
-    if (d.together) return; // つながった文字を選んだまま（1 文字に戻さない・編集も始めない）
-    if (d.additive) {
-      if (d.wasSelected) {
-        selected.delete(d.id);
+    if (d.together) {
+      // Shift・Ctrl/⌘ を押したまま動かさずに離した：すでに全部選ばれていたら外す（なければ加えたまま）
+      if (d.togetherWas) {
+        for (const g of d.together) selected.delete(g);
         refreshSelection();
       }
       return;
