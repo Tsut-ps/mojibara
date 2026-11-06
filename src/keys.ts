@@ -1,11 +1,23 @@
 // キーボードショートカット
 
+import { view } from './state';
 import { confirmDlg } from './dom';
 import { editSelected } from './editor';
 import { closeMenu } from './menu';
 import { setSpace } from './pointer';
-import { deleteSelected, duplicateSelected, select, selectAll, selected } from './tiles';
+import { deleteSelected, duplicateSelected, nudgeSelected, select, selectAll, selected } from './tiles';
 import { doRedo, doUndo } from './toolbar';
+
+// 矢印キー移動の 1 回の量（画面上の px）。Shift で大きく動かす
+const NUDGE_PX = 1;
+const NUDGE_BIG_PX = 10;
+
+const ARROWS: Record<string, [number, number]> = {
+  ArrowLeft: [-1, 0],
+  ArrowRight: [1, 0],
+  ArrowUp: [0, -1],
+  ArrowDown: [0, 1],
+};
 
 function isTyping(target: EventTarget | null): boolean {
   if (confirmDlg.open) return true;
@@ -39,6 +51,11 @@ window.addEventListener('keydown', (e) => {
       e.preventDefault();
       deleteSelected();
     }
+  } else if (e.key in ARROWS && selected.size && !mod && !e.altKey) {
+    e.preventDefault();
+    const [ax, ay] = ARROWS[e.key];
+    const step = (e.shiftKey ? NUDGE_BIG_PX : NUDGE_PX) / view.s;
+    nudgeSelected(ax * step, ay * step);
   } else if (e.key === 'Escape') {
     closeMenu();
     if (selected.size) select([]);

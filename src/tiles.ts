@@ -1,6 +1,6 @@
 // タイル（文字）の描画・選択・配置・一括操作
 
-import { meta, newId, pushUndo, saveSoon, tiles, type Tile } from './state';
+import { meta, newId, pushUndo, saveSoon, tiles, undoDepth, type Tile } from './state';
 import { GAP, MAX_SIZE, MIN_SIZE, ROW } from './config';
 import { world } from './dom';
 import { clamp, graphemes, measure } from './util';
@@ -179,6 +179,31 @@ export function resizeSelected(f: number): void {
     t.y = cy + (t.y - cy) * f;
     const el = els.get(t.id);
     if (el) paintTile(el, t);
+  }
+  changed();
+}
+
+let nudgeAt = 0;
+let nudgeDepth = -1;
+
+/**
+ * 選択中の文字を少し動かす（矢印キー用）。
+ * 押しっぱなしや連打は、元に戻す 1 回分にまとめる。
+ */
+export function nudgeSelected(dx: number, dy: number): void {
+  const list = selectedTiles();
+  if (!list.length) return;
+  const now = performance.now();
+  if (now - nudgeAt > 600 || undoDepth() !== nudgeDepth) {
+    pushUndo();
+    nudgeDepth = undoDepth();
+  }
+  nudgeAt = now;
+  for (const t of list) {
+    t.x += dx;
+    t.y += dy;
+    const el = els.get(t.id);
+    if (el) el.style.translate = `${t.x}px ${t.y}px`;
   }
   changed();
 }
