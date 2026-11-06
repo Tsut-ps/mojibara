@@ -4,6 +4,7 @@ import { canRedo, canUndo, flushSave, redo, tiles, undo, view } from './state';
 import { byId, clearBtn, confirmDlg, redoBtn, svg, undoBtn, zoomLabel } from './dom';
 import { isEditing, positionEditor } from './editor';
 import { isSoundOn, playSnap, setSoundOn } from './sound';
+import { showToast } from './toast';
 import { changed, deleteAll, onChange, syncAll } from './tiles';
 import { fitAll, tweenTo, zoomTarget } from './view';
 
@@ -37,7 +38,10 @@ export function askDeleteAll(): void {
 }
 
 confirmDlg.addEventListener('close', () => {
-  if (confirmDlg.returnValue === 'ok') deleteAll();
+  if (confirmDlg.returnValue === 'ok') {
+    deleteAll();
+    showToast('すべて削除しました', { label: '元に戻す', run: doUndo });
+  }
   confirmDlg.returnValue = '';
 });
 

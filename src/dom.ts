@@ -26,6 +26,8 @@ export const clearBtn = byId<HTMLButtonElement>('clear');
 
 export const zoomLabel = byId('zoom-reset');
 
+export const toastEl = byId('toast');
+
 const ICONS: Record<string, string> = {
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
   redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',

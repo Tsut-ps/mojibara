@@ -155,4 +155,7 @@ export function redo(): boolean {
 }
 
 export const canUndo = () => undoStack.length > 0;
+
+/** 履歴の深さ。操作つきの通知が古くなったか調べるのに使う */
+export const undoDepth = () => undoStack.length;
 export const canRedo = () => redoStack.length > 0;
