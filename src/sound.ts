@@ -12,6 +12,7 @@ try {
 let ctx: AudioContext | null = null;
 let noise: AudioBuffer | null = null;
 let lastAt = 0;
+const SNAP_GAP_MS = 350;
 
 export function isSoundOn(): boolean {
   return enabled;
@@ -104,11 +105,11 @@ export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number): void
   tone(u, 1700, 1700, 0.14, 0.018, 0.001);
 }
 
-/** スナップ音。連続して鳴りすぎないよう間隔をあける */
+/** スナップ音。吸着の出入りが細かく続いても 1 回に聞こえるよう、間隔をあける */
 export function playSnap(): void {
   if (!enabled || !ctx || ctx.state !== 'running') return;
   const now = performance.now();
-  if (now - lastAt < 70) return;
+  if (now - lastAt < SNAP_GAP_MS) return;
   lastAt = now;
   synthSnap(ctx, ctx.destination, ctx.currentTime);
 }

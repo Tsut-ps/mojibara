@@ -50,6 +50,7 @@ type Drag =
       others: Target[]; // 吸着先の候補（動かさない文字）
       moving: HTMLElement[];
       snap: Snap | null; // 今の吸着状態
+      evaluated: boolean; // 吸着の判定を一度でも行ったか（最初の判定は音を鳴らさない）
       glideTimer: number;
     }
   | { kind: 'pan'; startX: number; startY: number; vx: number; vy: number; moved: boolean; bgTap: boolean }
@@ -74,8 +75,12 @@ function cancelLongPress(): void {
   window.clearTimeout(lpTimer);
 }
 
-/** 吸着先が変わった：ぬるっと動かす（音は離したときに鳴らす） */
-function setSnap(d: TilesDrag, next: Snap | null): void {
+/**
+ * 吸着先が変わった：ぬるっと動かし、吸着していない状態から吸着したときだけカチッと鳴らす。
+ * silent は、持ち上げた時点ですでに隣にくっついていた場合（持ち上げただけで鳴らさない）。
+ */
+function setSnap(d: TilesDrag, next: Snap | null, silent = false): void {
+  const engaging = !d.snap && next !== null; // 吸着先どうしの乗り換えでは鳴らさない
   if (d.snap) els.get(d.snap.id)?.classList.remove('snap-target');
   d.snap = next;
   for (const el of d.moving) el.classList.add('glide');
@@ -84,6 +89,7 @@ function setSnap(d: TilesDrag, next: Snap | null): void {
     for (const el of d.moving) el.classList.remove('glide');
   }, 160);
   if (next) els.get(next.id)?.classList.add('snap-target');
+  if (engaging && !silent) playSnap();
 }
 
 /** ドラッグが終わる・中断したとき、持ち上げ表示と吸着先の表示を消す */
@@ -164,6 +170,7 @@ stage.addEventListener('pointerdown', (e) => {
       others: [],
       moving: [],
       snap: null,
+      evaluated: false,
       glideTimer: 0,
     };
     return;
@@ -225,7 +232,9 @@ stage.addEventListener('pointermove', (e) => {
     if (d.group) {
       const raw = { x: d.group.x + dx / view.s, y: d.group.y + dy / view.s, w: d.group.w, h: d.group.h };
       const found = e.altKey ? null : findSnap(raw, d.others, SNAP_PX / view.s, d.snap);
-      if (found?.id !== d.snap?.id || found?.side !== d.snap?.side) setSnap(d, found);
+      const first = !d.evaluated;
+      d.evaluated = true;
+      if (found?.id !== d.snap?.id || found?.side !== d.snap?.side) setSnap(d, found, first);
       sx = found?.dx ?? 0;
       sy = found?.dy ?? 0;
     }
@@ -288,7 +297,6 @@ function onPointerEnd(e: PointerEvent): void {
   const ok = e.type === 'pointerup';
 
   if (d.kind === 'tiles') {
-    if (ok && d.snap) playSnap(); // 吸着したまま離したとき、積み木を置く音を 1 回だけ鳴らす
     endDrag(d);
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
