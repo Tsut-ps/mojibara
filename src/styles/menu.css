@@ -1,0 +1,75 @@
+/* 右クリックメニュー */
+
+#menu {
+  position: fixed;
+  z-index: 30;
+  min-width: 210px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--menu-bg);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.2);
+  font-size: 13.5px;
+}
+#menu[hidden] {
+  display: none;
+}
+.mi {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mi:hover,
+.mi:focus-visible {
+  outline: none;
+  background: var(--hover-bg);
+}
+.mi.danger {
+  color: var(--c-red);
+}
+.mi .hint {
+  margin-left: auto;
+  padding-left: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.msep {
+  height: 1px;
+  margin: 5px 4px;
+  background: var(--line);
+}
+.mcap {
+  padding: 4px 10px 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.swatches {
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+}
+.sw {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid var(--menu-bg);
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 0 1px var(--line);
+  cursor: pointer;
+}
+.sw:hover {
+  transform: scale(1.12);
+}
+.sw.current {
+  box-shadow: 0 0 0 2px var(--accent);
+}

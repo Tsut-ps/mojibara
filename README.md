@@ -47,7 +47,7 @@ Node は 20.19 以上（または 22.12 以上）が必要です。古い場合�
 
 ## 構成
 
-`src/main.ts` が起動（初期化と各モジュールの読み込み）、`src/style.css` が見た目（ライト/ダーク自動切替）です。
+`src/main.ts` が起動（初期化と各モジュールの読み込み）、`src/styles/` が見た目（ライト/ダーク自動切替）です。部品ごとに `base` `canvas` `editor` `toolbar` `menu` `toast` `dialog` に分かれ、`index.css` がまとめます。
 
 - `src/core/` 土台
   - `state.ts` データ・履歴（undo/redo）・保存

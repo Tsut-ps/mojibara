@@ -1,6 +1,6 @@
 // 起動（初期化と各モジュールの読み込み）
 
-import './style.css';
+import './styles/index.css';
 import { load, meta, view } from './core/state';
 import { syncAll } from './tiles/tiles';
 import { syncUi } from './ui/toolbar';

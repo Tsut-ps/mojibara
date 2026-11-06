@@ -1,0 +1,77 @@
+/* ダイアログ・ヘルプ */
+
+dialog,
+#help {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--menu-bg);
+  color: var(--text);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  font-family: var(--font);
+}
+dialog {
+  width: min(360px, calc(100vw - 32px));
+  padding: 20px;
+}
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+dialog h2,
+#help h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+dialog p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.actions .btn {
+  padding: 0 14px;
+  border: 1px solid var(--line);
+}
+.btn.primary {
+  border-color: transparent;
+  background: var(--c-red);
+  color: #fff;
+}
+.btn.primary:hover:not(:disabled) {
+  background: var(--c-red);
+  filter: brightness(1.1);
+}
+
+#help {
+  position: fixed;
+  inset: auto;
+  top: calc(60px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  width: min(340px, calc(100vw - 24px));
+  margin: 0;
+  padding: 16px 18px;
+  font-size: 13px;
+}
+#help dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 14px;
+  margin: 0;
+}
+#help dt {
+  font-weight: 500;
+}
+#help dd {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+#help .note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}

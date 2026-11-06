@@ -1,0 +1,46 @@
+/* 入力欄・空のときの案内 */
+
+#editor {
+  position: fixed;
+  z-index: 20;
+  box-sizing: content-box;
+  margin: 0;
+  padding: 0 0.06em;
+  border: 0;
+  border-radius: 0.22em;
+  outline: 0;
+  background: var(--sel-bg);
+  caret-color: var(--text);
+  font-family: var(--font);
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: pre;
+  overflow: hidden;
+  resize: none;
+}
+#editor[hidden] {
+  display: none;
+}
+
+
+#empty {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  text-align: center;
+  pointer-events: none;
+  color: var(--muted);
+}
+#empty p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+#empty small {
+  font-size: 13px;
+}
+body:not(.is-empty) #empty {
+  display: none;
+}
