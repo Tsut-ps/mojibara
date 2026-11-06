@@ -11,6 +11,7 @@ import {
   bounds,
   bringToFront,
   changed,
+  connectedOf,
   els,
   refreshSelection,
   select,
@@ -43,6 +44,7 @@ type Drag =
       startY: number;
       moved: boolean;
       additive: boolean;
+      together: boolean; // Ctrl/⌘：押した文字につながった文字ごと動かす
       wasSelected: boolean;
       orig: Map<string, { x: number; y: number }>;
       // 横スナップ用（動かし始めた時点で確定する）
@@ -142,12 +144,16 @@ stage.addEventListener('pointerdown', (e) => {
     return;
   }
 
-  const additive = e.shiftKey || e.metaKey || e.ctrlKey;
+  const additive = e.shiftKey; // Shift：選択に追加
+  const together = e.metaKey || e.ctrlKey; // Ctrl/⌘：つながった文字ごと動かす
 
   if (tileEl instanceof HTMLElement && tileEl.dataset.id) {
     const id = tileEl.dataset.id;
     const wasSelected = selected.has(id);
-    if (additive) {
+    if (together) {
+      // すでに選んでいる文字の中を押したなら選択全体から、そうでなければ押した文字から、つながりをたどる
+      select(connectedOf(wasSelected ? [...selected] : [id]));
+    } else if (additive) {
       if (!wasSelected) {
         selected.add(id);
         refreshSelection();
@@ -164,6 +170,7 @@ stage.addEventListener('pointerdown', (e) => {
       startY: e.clientY,
       moved: false,
       additive,
+      together,
       wasSelected,
       orig,
       group: null,
@@ -300,6 +307,7 @@ function onPointerEnd(e: PointerEvent): void {
     endDrag(d);
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
+    if (d.together) return; // つながった文字を選んだまま（1 文字に戻さない・編集も始めない）
     if (d.additive) {
       if (d.wasSelected) {
         selected.delete(d.id);
