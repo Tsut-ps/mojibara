@@ -8,6 +8,20 @@ export const GAP = PAD_X * 2; // 並べたタイル同士の追加間隔(em)
 
 export const ROW = 1.45; // 行送り(em)。入力欄の line-height と合わせる
 
+export const PAD_Y = 0.05; // タイルの上下パディング(em)。CSS と合わせる
+
+export const TILE_H = 1.25 + PAD_Y * 2; // 1 文字タイルの高さ(em) = line-height 1.25 + 上下パディング
+
+export const MID_Y = TILE_H / 2; // タイル上端から文字の中央まで(em)
+
+export const OFFSET = 24; // 複製・貼り付けで少しずらす量（ワールド単位）
+
+export const MAX_TILES = 2000; // 一度に貼れる文字数の上限（巨大なデータで固まらないように）
+
+export const MAX_TEXT = 500; // 文字列を貼るときの上限
+
+export const MAX_FILE_BYTES = 20 * 1024 * 1024; // 読み込めるファイルの大きさの上限
+
 export const GRID = 24; // ドットの間隔（ワールド単位）
 
 export const MIN_S = 0.1;

@@ -4,7 +4,7 @@
 
 import { readingRows, type Box } from './arrange';
 import { newId, sanitizeTile, view, tiles, pushUndo, type Tile } from './state';
-import { BASE_SIZE, PAD_X } from './config';
+import { BASE_SIZE, GAP, MAX_TEXT, MAX_TILES, MID_Y, OFFSET, PAD_X, TILE_H } from './config';
 import { stage } from './dom';
 import { showToast } from './toast';
 import { addTiles, changed, deleteSelected, layoutText, select, selectedTiles, worldRect } from './tiles';
@@ -12,9 +12,6 @@ import { clamp, graphemes, measure } from './util';
 import { screenToWorld } from './view';
 
 const MIME = 'application/x-mojibara-tiles';
-const MAX_TILES = 2000; // 一度に貼れる文字数の上限（巨大なデータで固まらないように）
-const MAX_TEXT = 500; // 文字列を貼るときの上限
-const STEP = 24; // 同じ場所に重ねて貼るときのずらし量
 
 type Clip = Array<Pick<Tile, 'ch' | 'x' | 'y' | 'size' | 'color' | 'z'>>;
 
@@ -92,8 +89,8 @@ function pasteClip(clip: Clip): void {
   for (const c of clip) {
     x1 = Math.min(x1, c.x);
     y1 = Math.min(y1, c.y);
-    x2 = Math.max(x2, c.x + measure(c.ch, c.size) + c.size * PAD_X * 2);
-    y2 = Math.max(y2, c.y + c.size * 1.35);
+    x2 = Math.max(x2, c.x + measure(c.ch, c.size) + c.size * GAP);
+    y2 = Math.max(y2, c.y + c.size * TILE_H);
   }
   const p = target();
   let dx = p.x - (x1 + x2) / 2;
@@ -107,8 +104,8 @@ function pasteClip(clip: Clip): void {
       ),
     );
   for (let i = 0; i < 20 && taken(dx, dy); i++) {
-    dx += STEP;
-    dy += STEP;
+    dx += OFFSET;
+    dy += OFFSET;
   }
   const ordered = [...clip].sort((a, b) => a.z - b.z);
   pushUndo();
@@ -132,7 +129,7 @@ function pasteText(raw: string): void {
   // 入力したときと同じ大きさ（画面上で 16〜72px）で、マウスの位置から並べる
   const size = Math.round(clamp(BASE_SIZE, 16 / view.s, 72 / view.s));
   const p = target();
-  const laid = layoutText(text, p.x - PAD_X * size, p.y - 0.675 * size, size, 'ink');
+  const laid = layoutText(text, p.x - PAD_X * size, p.y - MID_Y * size, size, 'ink');
   if (!laid.length) return;
   pushUndo();
   const created = addTiles(laid);

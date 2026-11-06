@@ -1,7 +1,7 @@
 // タイル（文字）の描画・選択・配置・一括操作
 
 import { meta, newId, pushUndo, saveSoon, tiles, undoDepth, type Tile } from './state';
-import { GAP, MAX_SIZE, MIN_SIZE, ROW } from './config';
+import { GAP, MAX_SIZE, MIN_SIZE, OFFSET, ROW } from './config';
 import { world } from './dom';
 import { lineUp, scatter, type Box, type Positions } from './arrange';
 import { connectedIds } from './snap';
@@ -249,7 +249,7 @@ export function duplicateSelected(): void {
   pushUndo();
   const copies: string[] = [];
   for (const t of list) {
-    const c: Tile = { ...t, id: newId(), x: t.x + 24, y: t.y + 24, z: ++meta.zTop };
+    const c: Tile = { ...t, id: newId(), x: t.x + OFFSET, y: t.y + OFFSET, z: ++meta.zTop };
     tiles.set(c.id, c);
     ensureEl(c);
     copies.push(c.id);

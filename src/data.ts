@@ -1,15 +1,13 @@
 // ファイルへの書き出し / 読み込み（JSON）。ブラウザのデータはドメインごとなので、
 // バックアップや別の端末・別のアドレスへの移動に使う。
 
-import { BASE_SIZE } from './config';
+import { BASE_SIZE, MAX_FILE_BYTES } from './config';
 import { exportJson, meta, newId, parseJson, pushUndo, tiles, type Tile } from './state';
 import { byId, fileInput, importDlg } from './dom';
 import { bounds, changed, removeTile, select, syncAll } from './tiles';
 import { doUndo } from './toolbar';
 import { showToast } from './toast';
 import { fitAll } from './view';
-
-const MAX_FILE_BYTES = 20 * 1024 * 1024;
 
 const two = (n: number) => String(n).padStart(2, '0');
 

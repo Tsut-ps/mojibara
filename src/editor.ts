@@ -1,7 +1,7 @@
 // 入力欄（新規入力 / 一文字編集）
 
 import { pushUndo, tiles, view } from './state';
-import { BASE_SIZE, PAD_X } from './config';
+import { BASE_SIZE, MID_Y, PAD_X, PAD_Y } from './config';
 import { editor } from './dom';
 import {
   addTiles,
@@ -40,7 +40,7 @@ export function openNew(clientX: number, clientY: number): void {
   openEditor({
     mode: 'new',
     x: p.x - PAD_X * size,
-    y: p.y - 0.675 * size, // ポインタ位置が 1 行目の中央になるように
+    y: p.y - MID_Y * size, // ポインタ位置が 1 行目の中央になるように
     size,
     color: 'ink',
   });
@@ -72,7 +72,7 @@ export function positionEditor(): void {
   editor.style.fontSize = `${fs}px`;
   editor.style.left = `${view.x + edit.x * view.s}px`;
   // 入力欄の行(1.45em)の中央とタイルの文字の中央を揃える
-  editor.style.top = `${view.y + (edit.y - 0.05 * edit.size) * view.s}px`;
+  editor.style.top = `${view.y + (edit.y - PAD_Y * edit.size) * view.s}px`;
   fitEditor();
 }
 
