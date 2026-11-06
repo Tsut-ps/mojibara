@@ -12,6 +12,7 @@ import {
   resizeSelected,
   select,
   selectAll,
+  selectConnected,
   selected,
   setColor,
 } from './tiles';
@@ -74,6 +75,8 @@ window.addEventListener('keydown', (e) => {
   } else if (selected.size && !mod && !e.altKey && e.key === '-') {
     e.preventDefault();
     resizeSelected(0.8);
+  } else if (key === 'w' && selected.size && !mod && !e.altKey && !e.shiftKey) {
+    selectConnected();
   } else if (e.key === 'Escape') {
     closeMenu();
     if (selected.size) select([]);

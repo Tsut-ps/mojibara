@@ -9,6 +9,7 @@ import {
   duplicateSelected,
   resizeSelected,
   selectAll,
+  selectConnected,
   selectedTiles,
   setColor,
 } from './tiles';
@@ -86,6 +87,7 @@ export function showTileMenu(x: number, y: number): void {
   entries.push({ type: 'item', label: '大きく', icon: 'grow', hint: '+', keep: true, run: () => resizeSelected(1.25) });
   entries.push({ type: 'item', label: '小さく', icon: 'shrink', hint: '-', keep: true, run: () => resizeSelected(0.8) });
   if (n === 1) entries.push({ type: 'item', label: '編集', icon: 'edit', hint: 'Enter', run: editSelected });
+  entries.push({ type: 'item', label: 'つながった文字も選択', icon: 'link', hint: 'W', run: selectConnected });
   entries.push({ type: 'item', label: '複製', icon: 'copy', hint: `${MOD}D`, run: duplicateSelected });
   entries.push({ type: 'sep' });
   entries.push({ type: 'item', label: '削除', icon: 'trash', hint: 'Del', danger: true, run: deleteSelected });

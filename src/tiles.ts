@@ -3,6 +3,7 @@
 import { meta, newId, pushUndo, saveSoon, tiles, undoDepth, type Tile } from './state';
 import { GAP, MAX_SIZE, MIN_SIZE, ROW } from './config';
 import { world } from './dom';
+import { connectedIds } from './snap';
 import { clamp, graphemes, measure } from './util';
 
 export const els = new Map<string, HTMLDivElement>();
@@ -235,6 +236,14 @@ export function deleteAll(): void {
   pushUndo();
   for (const id of [...tiles.keys()]) removeTile(id);
   changed();
+}
+
+/** 選択中の文字とつながっている文字（スナップで並べた単語など）をまとめて選択する */
+export function selectConnected(): void {
+  if (!selected.size) return;
+  const rects = new Map<string, ReturnType<typeof worldRect>>();
+  for (const t of tiles.values()) rects.set(t.id, worldRect(t));
+  select(connectedIds(selected, rects));
 }
 
 export function selectAll(): void {

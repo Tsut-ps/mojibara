@@ -19,6 +19,38 @@ export interface Snap {
   dy: number; // 行の中心を揃えるための移動量
 }
 
+/** 同じ行で、すき間がほぼない（スナップや続けて入力して並んでいる）2 文字か */
+export function adjacent(a: Rect, b: Rect): boolean {
+  const acy = a.y + a.h / 2;
+  const bcy = b.y + b.h / 2;
+  if (Math.abs(acy - bcy) > Math.max(a.h, b.h) * 0.6) return false;
+  // 左右のすき間（重なっていれば負）。半分より深く重なっているものは別の文字とみなす
+  const gap = Math.max(a.x, b.x) - Math.min(a.x + a.w, b.x + b.w);
+  return gap <= Math.min(a.h, b.h) * 0.15 && gap >= -Math.min(a.w, b.w) * 0.5;
+}
+
+/** seeds から、隣り合う文字をたどってつながるすべての文字の id を返す */
+export function connectedIds(seeds: Iterable<string>, rects: Map<string, Rect>): Set<string> {
+  const found = new Set<string>();
+  const queue: string[] = [];
+  for (const id of seeds) {
+    if (rects.has(id) && !found.has(id)) {
+      found.add(id);
+      queue.push(id);
+    }
+  }
+  while (queue.length) {
+    const cur = rects.get(queue.pop() as string) as Rect;
+    for (const [id, r] of rects) {
+      if (!found.has(id) && adjacent(cur, r)) {
+        found.add(id);
+        queue.push(id);
+      }
+    }
+  }
+  return found;
+}
+
 /** いったん吸着したら、新規に吸着するときよりこの倍率だけ遠くまで保つ（ガタつき防止） */
 const KEEP = 1.7;
 

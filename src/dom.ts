@@ -40,6 +40,7 @@ const ICONS: Record<string, string> = {
   copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
   grow: '<path d="M3 19 8 6l5 13M5 14h6"/><path d="M19 4v6M16 7h6"/>',
   shrink: '<path d="M3 19 8 6l5 13M5 14h6"/><path d="M16 7h6"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1 1"/><path d="M14 11a5 5 0 0 0-7.1 0l-2 2a5 5 0 0 0 7.1 7.1l1-1"/>',
   select: '<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 3"/>',
   type: '<path d="M5 7V4h14v3M12 4v16M9 20h6"/>',
   volume:
