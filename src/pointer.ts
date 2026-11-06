@@ -11,6 +11,7 @@ import {
   bounds,
   bringToFront,
   changed,
+  connectedOf,
   els,
   refreshSelection,
   select,
@@ -42,7 +43,7 @@ type Drag =
       startX: number;
       startY: number;
       moved: boolean;
-      additive: boolean;
+      additive: boolean; // Shift・Ctrl/⌘：クリックは 1 つずつ追加 / 外す、ドラッグはつながった文字ごと動かす
       wasSelected: boolean;
       orig: Map<string, { x: number; y: number }>;
       // 横スナップ用（動かし始めた時点で確定する）
@@ -142,12 +143,12 @@ stage.addEventListener('pointerdown', (e) => {
     return;
   }
 
-  const additive = e.shiftKey || e.metaKey || e.ctrlKey;
+  const modifier = e.shiftKey || e.metaKey || e.ctrlKey; // Shift・Ctrl/⌘ のどちらでも同じ
 
   if (tileEl instanceof HTMLElement && tileEl.dataset.id) {
     const id = tileEl.dataset.id;
     const wasSelected = selected.has(id);
-    if (additive) {
+    if (modifier) {
       if (!wasSelected) {
         selected.add(id);
         refreshSelection();
@@ -163,7 +164,7 @@ stage.addEventListener('pointerdown', (e) => {
       startX: e.clientX,
       startY: e.clientY,
       moved: false,
-      additive,
+      additive: modifier,
       wasSelected,
       orig,
       group: null,
@@ -176,15 +177,16 @@ stage.addEventListener('pointerdown', (e) => {
     return;
   }
 
-  // マウス・ペン：背景のドラッグは範囲選択（Shift などで今の選択に追加）。タッチは下の「画面移動」
+  // マウス・ペン：背景のドラッグは範囲選択（Shift・Ctrl/⌘ で今の選択に追加）。タッチは下の「画面移動」
   if (e.pointerType !== 'touch') {
+    const bgAdditive = modifier;
     drag = {
       kind: 'marquee',
       startX: e.clientX,
       startY: e.clientY,
-      base: new Set(additive ? selected : []),
+      base: new Set(bgAdditive ? selected : []),
       moved: false,
-      additive,
+      additive: bgAdditive,
     };
     return;
   }
@@ -214,6 +216,15 @@ stage.addEventListener('pointermove', (e) => {
       d.moved = true;
       cancelLongPress();
       pushUndo();
+      if (d.additive) {
+        // Shift・Ctrl/⌘ で動かし始めたら、押した文字につながった文字も選択に加えて、いっしょに動かす
+        for (const g of connectedOf([d.id])) {
+          selected.add(g);
+          const t = tiles.get(g);
+          if (t && !d.orig.has(g)) d.orig.set(g, { x: t.x, y: t.y });
+        }
+        refreshSelection();
+      }
       const list = selectedTiles();
       bringToFront(list);
       for (const t of list) els.get(t.id)?.classList.remove('spawn');
@@ -301,6 +312,7 @@ function onPointerEnd(e: PointerEvent): void {
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
     if (d.additive) {
+      // 動かさずに離した：すでに選んでいた文字なら外す（1 つずつ追加・外す）
       if (d.wasSelected) {
         selected.delete(d.id);
         refreshSelection();

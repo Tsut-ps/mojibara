@@ -272,12 +272,16 @@ export function deleteAll(): void {
   changed();
 }
 
-/** 選択中の文字とつながっている文字（スナップで並べた単語など）をまとめて選択する */
-export function selectConnected(): void {
-  if (!selected.size) return;
+/** seeds とつながっている文字（スナップで並べた単語など）の id を、seeds を含めて返す */
+export function connectedOf(seeds: Iterable<string>): Set<string> {
   const rects = new Map<string, ReturnType<typeof worldRect>>();
   for (const t of tiles.values()) rects.set(t.id, worldRect(t));
-  select(connectedIds(selected, rects));
+  return connectedIds(seeds, rects);
+}
+
+/** 選択中の文字とつながっている文字をまとめて選択する */
+export function selectConnected(): void {
+  if (selected.size) select(connectedOf([...selected]));
 }
 
 export function selectAll(): void {
