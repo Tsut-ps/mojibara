@@ -43,8 +43,8 @@ type Drag =
       startX: number;
       startY: number;
       moved: boolean;
-      together: Set<string> | null; // Shift・Ctrl/⌘：押した文字につながった文字（選択に加えた分）
-      togetherWas: boolean; // それらがもともと全部選択されていたか（動かさず押したとき、外す判断に使う）
+      additive: boolean; // Shift・Ctrl/⌘：クリックは 1 つずつ追加 / 外す、ドラッグはつながった文字ごと動かす
+      wasSelected: boolean;
       orig: Map<string, { x: number; y: number }>;
       // 横スナップ用（動かし始めた時点で確定する）
       group: Rect | null; // 動かしている文字の範囲
@@ -147,15 +147,13 @@ stage.addEventListener('pointerdown', (e) => {
 
   if (tileEl instanceof HTMLElement && tileEl.dataset.id) {
     const id = tileEl.dataset.id;
-    let together: Set<string> | null = null;
-    let togetherWas = false;
+    const wasSelected = selected.has(id);
     if (modifier) {
-      // 押した文字につながった文字ごと、いまの選択に加える（ドラッグすればまとめて動く）
-      together = connectedOf([id]);
-      togetherWas = [...together].every((g) => selected.has(g));
-      for (const g of together) selected.add(g);
-      refreshSelection();
-    } else if (!selected.has(id)) {
+      if (!wasSelected) {
+        selected.add(id);
+        refreshSelection();
+      }
+    } else if (!wasSelected) {
       select([id]);
     }
     const orig = new Map<string, { x: number; y: number }>();
@@ -166,8 +164,8 @@ stage.addEventListener('pointerdown', (e) => {
       startX: e.clientX,
       startY: e.clientY,
       moved: false,
-      together,
-      togetherWas,
+      additive: modifier,
+      wasSelected,
       orig,
       group: null,
       others: [],
@@ -218,6 +216,15 @@ stage.addEventListener('pointermove', (e) => {
       d.moved = true;
       cancelLongPress();
       pushUndo();
+      if (d.additive) {
+        // Shift・Ctrl/⌘ で動かし始めたら、押した文字につながった文字も選択に加えて、いっしょに動かす
+        for (const g of connectedOf([d.id])) {
+          selected.add(g);
+          const t = tiles.get(g);
+          if (t && !d.orig.has(g)) d.orig.set(g, { x: t.x, y: t.y });
+        }
+        refreshSelection();
+      }
       const list = selectedTiles();
       bringToFront(list);
       for (const t of list) els.get(t.id)?.classList.remove('spawn');
@@ -304,10 +311,10 @@ function onPointerEnd(e: PointerEvent): void {
     endDrag(d);
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
-    if (d.together) {
-      // Shift・Ctrl/⌘ を押したまま動かさずに離した：すでに全部選ばれていたら外す（なければ加えたまま）
-      if (d.togetherWas) {
-        for (const g of d.together) selected.delete(g);
+    if (d.additive) {
+      // 動かさずに離した：すでに選んでいた文字なら外す（1 つずつ追加・外す）
+      if (d.wasSelected) {
+        selected.delete(d.id);
         refreshSelection();
       }
       return;
