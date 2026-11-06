@@ -1,6 +1,6 @@
 // 整列・ばらまきの位置計算（座標だけを扱い、DOM には触れない）
 
-import { GAP } from './config';
+import { GAP } from '../core/config';
 
 export interface Box {
   id: string;

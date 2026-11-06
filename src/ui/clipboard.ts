@@ -2,15 +2,15 @@
 // ブラウザの copy / cut / paste イベントを使うので、許可の確認は出ない。
 // 配置ごとコピーし、ほかのアプリの文字列を貼ると一文字ずつの文字になる。
 
-import { readingRows, type Box } from './arrange';
-import { newId, sanitizeTile, view, tiles, pushUndo, type Tile } from './state';
-import { BASE_SIZE, GAP, MAX_TEXT, MAX_TILES, MID_Y, OFFSET, PAD_X, TILE_H } from './config';
-import { stage } from './dom';
-import { playSfx } from './sound';
+import { readingRows, type Box } from '../tiles/arrange';
+import { newId, sanitizeTile, view, tiles, pushUndo, type Tile } from '../core/state';
+import { BASE_SIZE, GAP, MAX_TEXT, MAX_TILES, MID_Y, OFFSET, PAD_X, TILE_H } from '../core/config';
+import { stage } from '../core/dom';
+import { playSfx } from '../sound';
 import { showToast } from './toast';
-import { addTiles, changed, deleteSelected, layoutText, select, selectedTiles, worldRect } from './tiles';
-import { clamp, graphemes, measure } from './util';
-import { screenToWorld } from './view';
+import { addTiles, changed, deleteSelected, layoutText, select, selectedTiles, worldRect } from '../tiles/tiles';
+import { clamp, graphemes, measure } from '../core/util';
+import { screenToWorld } from '../core/view';
 
 const MIME = 'application/x-mojibara-tiles';
 

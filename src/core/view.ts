@@ -3,7 +3,7 @@
 import { saveSoon, tiles, type View, view } from './state';
 import { GRID, MAX_S, MIN_S } from './config';
 import { stage, world, zoomLabel } from './dom';
-import { bounds } from './tiles';
+import { bounds } from '../tiles/tiles';
 import { clamp } from './util';
 
 const viewListeners: Array<() => void> = [];

@@ -1,16 +1,16 @@
 // ポインタ操作の振り分け（押した場所・ボタンに応じて gesture/ のどれかを始める）
 
-import { stage } from './dom';
+import { stage } from '../core/dom';
 import { type Gesture, cancelLongPress, pointers, startLongPress, tap } from './gesture/shared';
 import { startMarquee } from './gesture/marquee';
 import { startPan } from './gesture/pan';
 import { startPinch } from './gesture/pinch';
 import { startTilesDrag } from './gesture/tiles';
-import { openNew } from './editor';
-import { showBgMenu, showTileMenu } from './menus';
-import { select, selected } from './tiles';
-import { unlockAudio } from './sound';
-import { cancelTween } from './view';
+import { openNew } from '../ui/editor';
+import { showBgMenu, showTileMenu } from '../ui/menus';
+import { select, selected } from '../tiles/tiles';
+import { unlockAudio } from '../sound';
+import { cancelTween } from '../core/view';
 
 let drag: Gesture | null = null;
 

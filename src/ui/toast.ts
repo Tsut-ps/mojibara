@@ -1,8 +1,8 @@
 // 画面下の小さな通知（「元に戻す」などの操作つき）
 
-import { undoDepth } from './state';
-import { toastEl } from './dom';
-import { onChange } from './tiles';
+import { undoDepth } from '../core/state';
+import { toastEl } from '../core/dom';
+import { onChange } from '../tiles/tiles';
 
 let timer = 0;
 let depth = -1; // 操作つきのとき、表示した時点の履歴の深さ

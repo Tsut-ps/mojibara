@@ -1,11 +1,11 @@
 // タイル（文字）の描画・選択・配置・一括操作
 
-import { meta, newId, pushUndo, saveSoon, tiles, undoDepth, type Tile } from './state';
-import { GAP, MAX_SIZE, MIN_SIZE, OFFSET, ROW } from './config';
-import { world } from './dom';
+import { meta, newId, pushUndo, saveSoon, tiles, undoDepth, type Tile } from '../core/state';
+import { GAP, MAX_SIZE, MIN_SIZE, OFFSET, ROW } from '../core/config';
+import { world } from '../core/dom';
 import { lineUp, scatter, type Box, type Positions } from './arrange';
 import { connectedIds } from './snap';
-import { clamp, graphemes, measure } from './util';
+import { clamp, graphemes, measure } from '../core/util';
 
 export const els = new Map<string, HTMLDivElement>();
 

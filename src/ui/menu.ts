@@ -1,8 +1,8 @@
 // メニューの描画（中身は menus.ts が commands から組み立てる）
 
-import { COLORS } from './state';
-import { menu, svg } from './dom';
-import { clamp } from './util';
+import { COLORS } from '../core/state';
+import { menu, svg } from '../core/dom';
+import { clamp } from '../core/util';
 
 export type MenuEntry =
   | { type: 'item'; label: string; icon: string; hint?: string; danger?: boolean; keep?: boolean; run: () => void }

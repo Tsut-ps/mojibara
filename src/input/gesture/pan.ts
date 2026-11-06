@@ -1,11 +1,11 @@
 // 画面移動（中ボタン・Space・タッチの背景ドラッグ）
 
-import { view } from '../state';
-import { DRAG_PX } from '../config';
-import { stage } from '../dom';
-import { applyView } from '../view';
+import { view } from '../../core/state';
+import { DRAG_PX } from '../../core/config';
+import { stage } from '../../core/dom';
+import { applyView } from '../../core/view';
 import { type Gesture, cancelLongPress, tap } from './shared';
-import { selected, select } from '../tiles';
+import { selected, select } from '../../tiles/tiles';
 
 /**
  * immediate: 押した瞬間から動かす（中ボタン・Space）。

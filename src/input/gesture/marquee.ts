@@ -1,9 +1,9 @@
 // 範囲選択（マウス・ペンの背景ドラッグ）
 
-import { DRAG_PX } from '../config';
-import { marquee } from '../dom';
+import { DRAG_PX } from '../../core/config';
+import { marquee } from '../../core/dom';
 import { type Gesture, tap } from './shared';
-import { els, select, selected } from '../tiles';
+import { els, select, selected } from '../../tiles/tiles';
 
 /** additive: Shift・Ctrl/⌘ で今の選択に追加する */
 export function startMarquee(e: PointerEvent, additive: boolean): Gesture {

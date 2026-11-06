@@ -1,8 +1,8 @@
 // 入力欄（新規入力 / 一文字編集）
 
-import { pushUndo, tiles, view } from './state';
-import { BASE_SIZE, MID_Y, PAD_X, PAD_Y } from './config';
-import { editor } from './dom';
+import { pushUndo, tiles, view } from '../core/state';
+import { BASE_SIZE, MID_Y, PAD_X, PAD_Y } from '../core/config';
+import { editor } from '../core/dom';
 import {
   addTiles,
   changed,
@@ -14,10 +14,10 @@ import {
   removeTile,
   select,
   selected,
-} from './tiles';
-import { playSfx } from './sound';
-import { clamp, ensureFont, measure } from './util';
-import { onViewChange, screenToWorld } from './view';
+} from '../tiles/tiles';
+import { playSfx } from '../sound';
+import { clamp, ensureFont, measure } from '../core/util';
+import { onViewChange, screenToWorld } from '../core/view';
 
 interface EditCtx {
   mode: 'new' | 'edit';

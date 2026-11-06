@@ -1,11 +1,11 @@
 // 操作の定義（名前・アイコン・ショートカット・実行を 1 か所に集約）
 // キー入力（keys.ts）とメニュー（menus.ts）はここから組み立てる
 
-import { MOD } from './config';
-import { COLORS, view } from './state';
-import { exportFile, importFile } from './data';
-import { editSelected } from './editor';
-import { closeMenu } from './menu';
+import { MOD } from '../core/config';
+import { COLORS, view } from '../core/state';
+import { exportFile, importFile } from '../ui/data';
+import { editSelected } from '../ui/editor';
+import { closeMenu } from '../ui/menu';
 import {
   deleteSelected,
   duplicateSelected,
@@ -18,10 +18,10 @@ import {
   selectConnected,
   selected,
   setColor,
-} from './tiles';
-import { askDeleteAll, doRedo, doUndo } from './toolbar';
-import { playSfx } from './sound';
-import { fitAll } from './view';
+} from '../tiles/tiles';
+import { askDeleteAll, doRedo, doUndo } from '../ui/toolbar';
+import { playSfx } from '../sound';
+import { fitAll } from '../core/view';
 
 // 修飾キーの条件。true=押している / false=押していない / 'any'=どちらでもよい
 type Flag = boolean | 'any';

@@ -1,9 +1,9 @@
 // ピンチ（2 本指）でズーム
 
-import { view } from '../state';
-import { MAX_S, MIN_S } from '../config';
-import { clamp } from '../util';
-import { applyView, screenToWorld } from '../view';
+import { view } from '../../core/state';
+import { MAX_S, MIN_S } from '../../core/config';
+import { clamp } from '../../core/util';
+import { applyView, screenToWorld } from '../../core/view';
 import { type Gesture, pointers } from './shared';
 
 export function startPinch(): Gesture {

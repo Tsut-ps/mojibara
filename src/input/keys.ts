@@ -1,6 +1,6 @@
 // キーボードショートカット（定義は commands.ts）
 
-import { confirmDlg } from './dom';
+import { confirmDlg } from '../core/dom';
 import { keyCommands, matchShortcut } from './commands';
 import { setSpace } from './pointer';
 

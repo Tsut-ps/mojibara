@@ -1,12 +1,12 @@
 // ホイール / トラックパッドのピンチによるズーム
 
-import { view } from './state';
-import { MAX_S, MIN_S } from './config';
-import { stage } from './dom';
+import { view } from '../core/state';
+import { MAX_S, MIN_S } from '../core/config';
+import { stage } from '../core/dom';
 import { pointers } from './gesture/shared';
-import { closeMenu } from './menu';
-import { clamp } from './util';
-import { cancelTween, zoomAt } from './view';
+import { closeMenu } from '../ui/menu';
+import { clamp } from '../core/util';
+import { cancelTween, zoomAt } from '../core/view';
 
 stage.addEventListener(
   'wheel',

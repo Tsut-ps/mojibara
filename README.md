@@ -47,27 +47,28 @@ Node は 20.19 以上（または 22.12 以上）が必要です。古い場合�
 
 ## 構成
 
-- `src/main.ts` 起動（初期化と各モジュールの読み込み）
-- `src/state.ts` データ・履歴（undo/redo）・保存
-- `src/tiles.ts` 文字（タイル）の描画・選択・配置・一括操作
-- `src/view.ts` パン・ズーム・ドット背景
-- `src/editor.ts` 入力欄（新規入力 / 一文字編集）
-- `src/pointer.ts` ポインタ操作の振り分け・長押し（押した場所に応じて下のどれかを始める）
-- `src/gesture/` ドラッグの種類ごとの処理（`tiles` 文字の移動・スナップ / `marquee` 範囲選択 / `pan` 画面移動 / `pinch` 2 本指ズーム / `shared` 共通部分）
-- `src/wheel.ts` ホイール・トラックパッドのピンチ
-- `src/commands.ts` 操作の定義（名前・アイコン・ショートカット・実行を 1 か所に集約）
-- `src/keys.ts` キーボードショートカット（commands から照合）
-- `src/snap.ts` 横スナップ・隣接判定の計算（座標だけを扱う）
-- `src/arrange.ts` 整列・ばらまきの位置計算（座標だけを扱う）
-- `src/clipboard.ts` コピー・切り取り・貼り付け
-- `src/data.ts` JSON の書き出し・読み込み
-- `src/toast.ts` 画面下の通知（「元に戻す」付き）
+`src/main.ts` が起動（初期化と各モジュールの読み込み）、`src/style.css` が見た目（ライト/ダーク自動切替）です。
+
+- `src/core/` 土台
+  - `state.ts` データ・履歴（undo/redo）・保存
+  - `view.ts` パン・ズーム・ドット背景
+  - `dom.ts` / `config.ts` / `util.ts` DOM 参照・定数・汎用関数
+- `src/tiles/` 文字（タイル）
+  - `tiles.ts` 描画・選択・配置・一括操作
+  - `snap.ts` 横スナップ・隣接判定の計算（座標だけを扱う）
+  - `arrange.ts` 整列・ばらまきの位置計算（座標だけを扱う）
+- `src/input/` 入力
+  - `commands.ts` 操作の定義（名前・アイコン・ショートカット・実行を 1 か所に集約）
+  - `keys.ts` キーボードショートカット（commands から照合）
+  - `pointer.ts` ポインタ操作の振り分け・長押し
+  - `gesture/` ドラッグの種類ごとの処理（`tiles` 文字の移動・スナップ / `marquee` 範囲選択 / `pan` 画面移動 / `pinch` 2 本指ズーム / `shared` 共通部分）
+  - `wheel.ts` ホイール・トラックパッドのピンチ
+- `src/ui/` 画面の部品
+  - `editor.ts` 入力欄（新規入力 / 一文字編集）
+  - `menu.ts` メニューの描画 / `menus.ts` 右クリックメニューなどの中身（commands から組み立て）
+  - `toolbar.ts` ツールバー・確認ダイアログ / `toast.ts` 画面下の通知（「元に戻す」付き）
+  - `clipboard.ts` コピー・切り取り・貼り付け / `data.ts` JSON の書き出し・読み込み
 - `src/sound.ts` 効果音（Web Audio で合成。操作ごとの音もここ）
-- `src/menu.ts` メニューの描画
-- `src/menus.ts` 右クリックメニューなどの中身（commands から組み立て）
-- `src/toolbar.ts` ツールバー・確認ダイアログ
-- `src/dom.ts` / `src/config.ts` / `src/util.ts` DOM 参照・定数・汎用関数
-- `src/style.css` 見た目（ライト/ダーク自動切替）
 
 新しい操作は `commands.ts` に 1 つ足せば、キーとメニューの両方に反映されます（操作表は README / ヘルプにも追記）。
 

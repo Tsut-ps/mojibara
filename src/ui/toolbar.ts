@@ -1,12 +1,12 @@
 // ツールバー・確認ダイアログ・ボタン表示の同期
 
-import { canRedo, canUndo, flushSave, redo, tiles, undo, view } from './state';
-import { byId, clearBtn, confirmDlg, redoBtn, svg, undoBtn, zoomLabel } from './dom';
+import { canRedo, canUndo, flushSave, redo, tiles, undo, view } from '../core/state';
+import { byId, clearBtn, confirmDlg, redoBtn, svg, undoBtn, zoomLabel } from '../core/dom';
 import { isEditing, positionEditor } from './editor';
-import { isSoundOn, playSfx, playSnap, setSoundOn } from './sound';
+import { isSoundOn, playSfx, playSnap, setSoundOn } from '../sound';
 import { showToast } from './toast';
-import { changed, deleteAll, onChange, syncAll } from './tiles';
-import { fitAll, tweenTo, zoomTarget } from './view';
+import { changed, deleteAll, onChange, syncAll } from '../tiles/tiles';
+import { fitAll, tweenTo, zoomTarget } from '../core/view';
 
 export function syncUi(): void {
   undoBtn.disabled = !canUndo();

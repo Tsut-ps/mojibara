@@ -1,11 +1,11 @@
 // 文字（タイル）のドラッグ移動・タップ・ダブルタップ編集
 
-import { pushUndo, tiles, view } from '../state';
-import { DRAG_PX, LIFT_MAX, SNAP_PX } from '../config';
-import { stage } from '../dom';
-import { openEdit } from '../editor';
-import { findSnap, type Rect, type Snap, type Target } from '../snap';
-import { playSnap } from '../sound';
+import { pushUndo, tiles, view } from '../../core/state';
+import { DRAG_PX, LIFT_MAX, SNAP_PX } from '../../core/config';
+import { stage } from '../../core/dom';
+import { openEdit } from '../../ui/editor';
+import { findSnap, type Rect, type Snap, type Target } from '../../tiles/snap';
+import { playSnap } from '../../sound';
 import {
   bounds,
   bringToFront,
@@ -17,7 +17,7 @@ import {
   selected,
   selectedTiles,
   worldRect,
-} from '../tiles';
+} from '../../tiles/tiles';
 import { type Gesture, cancelLongPress } from './shared';
 
 let lastTap: { id: string; t: number; x: number; y: number } | null = null;

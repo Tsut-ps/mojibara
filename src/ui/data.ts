@@ -1,13 +1,13 @@
 // ファイルへの書き出し / 読み込み（JSON）。ブラウザのデータはドメインごとなので、
 // バックアップや別の端末・別のアドレスへの移動に使う。
 
-import { BASE_SIZE, MAX_FILE_BYTES } from './config';
-import { exportJson, meta, newId, parseJson, pushUndo, tiles, type Tile } from './state';
-import { byId, fileInput, importDlg } from './dom';
-import { bounds, changed, removeTile, select, syncAll } from './tiles';
+import { BASE_SIZE, MAX_FILE_BYTES } from '../core/config';
+import { exportJson, meta, newId, parseJson, pushUndo, tiles, type Tile } from '../core/state';
+import { byId, fileInput, importDlg } from '../core/dom';
+import { bounds, changed, removeTile, select, syncAll } from '../tiles/tiles';
 import { doUndo } from './toolbar';
 import { showToast } from './toast';
-import { fitAll } from './view';
+import { fitAll } from '../core/view';
 
 const two = (n: number) => String(n).padStart(2, '0');
 

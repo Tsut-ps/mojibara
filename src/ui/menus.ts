@@ -1,11 +1,11 @@
 // 右クリックメニューなどの中身（commands から組み立てる）
 
-import { COLORS } from './state';
-import { byId } from './dom';
-import { type Command, colorCommands, canRun, commands, hintOf } from './commands';
+import { COLORS } from '../core/state';
+import { byId } from '../core/dom';
+import { type Command, colorCommands, canRun, commands, hintOf } from '../input/commands';
 import { openNew } from './editor';
 import { type MenuEntry, showMenu } from './menu';
-import { selectedTiles } from './tiles';
+import { selectedTiles } from '../tiles/tiles';
 
 const item = (c: Command): MenuEntry => ({
   type: 'item',
