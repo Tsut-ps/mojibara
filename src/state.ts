@@ -29,6 +29,10 @@ export const COLORS = [
 
 const COLOR_KEYS: string[] = COLORS.map((c) => c.key);
 const STORAGE_KEY = 'mojibara:v1';
+const MAX_CH = 32; // 一文字（絵文字の連結を含む）として許す長さ
+const MAX_COORD = 1e7;
+const MAX_FONT = 2000;
+export const MAX_IMPORT = 20000; // ファイルから一度に読み込める文字数
 
 export const tiles = new Map<string, Tile>();
 export const view: View = { x: 0, y: 0, s: 1 };
@@ -43,8 +47,10 @@ const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFin
 export function sanitizeTile(raw: unknown): Tile | null {
   if (!raw || typeof raw !== 'object') return null;
   const t = raw as Record<string, unknown>;
-  if (typeof t.id !== 'string' || typeof t.ch !== 'string' || !t.ch) return null;
+  if (typeof t.id !== 'string' || typeof t.ch !== 'string' || !t.ch || t.ch.length > MAX_CH) return null;
   if (!isNum(t.x) || !isNum(t.y) || !isNum(t.size) || t.size <= 0) return null;
+  // 外から来たデータ（ファイル・貼り付け）で、画面が壊れるほど大きな値は受け付けない
+  if (Math.abs(t.x) > MAX_COORD || Math.abs(t.y) > MAX_COORD || t.size > MAX_FONT) return null;
   return {
     id: t.id,
     ch: t.ch,
@@ -112,6 +118,29 @@ export function flushSave(): void {
   if (!dirty) return;
   dirty = false;
   save();
+}
+
+// ---- ファイルへの書き出し / 読み込み ----
+
+/** バックアップ用の JSON（保存データと同じ形に、アプリ名を付ける） */
+export function exportJson(): string {
+  return JSON.stringify({ app: 'mojibara', v: 1, tiles: [...tiles.values()], view }, null, 1);
+}
+
+/** 読み込んだ JSON の文字を取り出す。形式が違う・多すぎるときは null（壊れた文字は読み飛ばす） */
+export function parseJson(text: string): Tile[] | null {
+  try {
+    const d = JSON.parse(text);
+    if (!d || !Array.isArray(d.tiles) || d.tiles.length > MAX_IMPORT) return null;
+    const out: Tile[] = [];
+    for (const r of d.tiles) {
+      const t = sanitizeTile(r);
+      if (t) out.push(t);
+    }
+    return out;
+  } catch {
+    return null;
+  }
 }
 
 // ---- 元に戻す / やり直し（スナップショット方式）----

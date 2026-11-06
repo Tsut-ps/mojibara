@@ -2,7 +2,8 @@
 
 import { COLORS } from './state';
 import { MOD } from './config';
-import { menu, svg } from './dom';
+import { byId, menu, svg } from './dom';
+import { exportFile, importFile } from './data';
 import { editSelected, openNew } from './editor';
 import {
   deleteSelected,
@@ -109,6 +110,15 @@ export function showBgMenu(x: number, y: number): void {
     { type: 'item', label: 'すべて削除', icon: 'trash', danger: true, run: askDeleteAll },
   ]);
 }
+
+// 右上のボタン：ファイルへの書き出し / 読み込み
+byId('data').addEventListener('click', (e) => {
+  const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  showMenu(r.right, r.bottom + 6, [
+    { type: 'item', label: 'ファイルに書き出し（JSON）', icon: 'download', run: exportFile },
+    { type: 'item', label: 'ファイルから読み込み（JSON）', icon: 'upload', run: importFile },
+  ]);
+});
 
 // 外側を押したらメニューを閉じる
 document.addEventListener(

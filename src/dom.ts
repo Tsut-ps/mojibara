@@ -28,6 +28,10 @@ export const zoomLabel = byId('zoom-reset');
 
 export const toastEl = byId('toast');
 
+export const importDlg = byId<HTMLDialogElement>('import');
+
+export const fileInput = byId<HTMLInputElement>('file');
+
 const ICONS: Record<string, string> = {
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
   redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
@@ -45,6 +49,10 @@ const ICONS: Record<string, string> = {
     '<path d="M3 12h18"/><rect x="5" y="8" width="3" height="8" rx="1"/><rect x="10.5" y="8" width="3" height="8" rx="1"/><rect x="16" y="8" width="3" height="8" rx="1"/>',
   shuffle:
     '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="m4 4 5 5"/>',
+  folder:
+    '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  download: '<path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/>',
+  upload: '<path d="M12 16V5"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/>',
   select: '<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 3"/>',
   type: '<path d="M5 7V4h14v3M12 4v16M9 20h6"/>',
   volume:

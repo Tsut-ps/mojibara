@@ -43,6 +43,9 @@
         <span data-icon="trash"></span><span class="label">すべて削除</span>
       </button>
       <span class="sep"></span>
+      <button class="btn" id="data" title="ファイルへ書き出し・読み込み" aria-label="ファイルへ書き出し・読み込み">
+        <span data-icon="folder"></span>
+      </button>
       <button class="btn" id="sound" aria-label="効果音"></button>
       <button class="btn" id="help-btn" popovertarget="help" title="使い方" aria-label="使い方">
         <span data-icon="help"></span>
@@ -60,6 +63,23 @@
     <div id="menu" role="menu" hidden></div>
 
     <div id="toast" role="status" aria-live="polite" hidden></div>
+
+    <input id="file" type="file" accept=".json,application/json" hidden />
+
+    <dialog id="import">
+      <form method="dialog">
+        <h2>どう読み込みますか？</h2>
+        <p>
+          いまのキャンバスには <span id="import-now">0</span> 文字あり、ファイルには
+          <span id="import-new">0</span> 文字あります。置き換えても Ctrl/⌘+Z で戻せます。
+        </p>
+        <div class="actions">
+          <button class="btn" value="cancel" autofocus>キャンセル</button>
+          <button class="btn" value="add">追加する</button>
+          <button class="btn primary" value="replace">置き換える</button>
+        </div>
+      </form>
+    </dialog>
 
     <dialog id="confirm">
       <form method="dialog">
@@ -101,6 +121,8 @@
         <dd>選択した文字の色（メニューの並び順）/ 大きさ</dd>
         <dt>矢印キー</dt>
         <dd>選択した文字を少し動かす（Shift で大きく）</dd>
+        <dt>右上のフォルダ</dt>
+        <dd>ファイル（JSON）に書き出し / 読み込み。バックアップや別の端末への移動に</dd>
         <dt>Ctrl/⌘ + C / X / V</dt>
         <dd>コピー / 切り取り / 貼り付け（配置ごと）。ほかの文字列を貼ると一文字ずつの文字に</dd>
         <dt>Ctrl/⌘ + A / D、Delete</dt>
