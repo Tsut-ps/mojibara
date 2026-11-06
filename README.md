@@ -10,7 +10,14 @@ npm run dev      # 開発サーバー
 npm run build    # dist/ に静的ファイルを生成
 ```
 
-`dist/` を静的ホスティング（Cloudflare Pages など）に置けば動きます。フォント（Noto Sans JP）は Google Fonts から読み込みます。
+`dist/` を静的ホスティングに置けば動きます。フォント（Noto Sans JP）は Google Fonts から読み込みます。
+
+### Cloudflare にデプロイ
+
+`wrangler.jsonc` が `dist` を静的アセットとして配信します（サーバー処理なし）。
+Cloudflare の Git 連携では、ビルドコマンド `npm run build`、デプロイコマンド `npx wrangler deploy` のままで動きます。
+`wrangler.jsonc` の `name` は、Cloudflare 側のプロジェクト名と合わせてください。
+Node は 20.19 以上（または 22.12 以上）が必要です。古い場合は環境変数 `NODE_VERSION` に `22` を設定します。
 
 ## 操作
 
