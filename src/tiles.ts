@@ -3,6 +3,7 @@
 import { meta, newId, pushUndo, saveSoon, tiles, undoDepth, type Tile } from './state';
 import { GAP, MAX_SIZE, MIN_SIZE, ROW } from './config';
 import { world } from './dom';
+import { lineUp, scatter, type Box, type Positions } from './arrange';
 import { connectedIds } from './snap';
 import { clamp, graphemes, measure } from './util';
 
@@ -207,6 +208,39 @@ export function nudgeSelected(dx: number, dy: number): void {
     if (el) el.style.translate = `${t.x}px ${t.y}px`;
   }
   changed();
+}
+
+/** 位置をまとめて変える（ぬるっと動かす）。元に戻せる */
+function moveTo(list: Tile[], pos: Positions): void {
+  if (!pos.size) return;
+  pushUndo();
+  for (const t of list) {
+    const p = pos.get(t.id);
+    const el = els.get(t.id);
+    if (!p || !el) continue;
+    t.x = p.x;
+    t.y = p.y;
+    el.classList.add('arrange');
+    paintTile(el, t);
+    window.setTimeout(() => el.classList.remove('arrange'), 500);
+  }
+  changed();
+}
+
+function boxesOf(list: Tile[]): Box[] {
+  return list.map((t) => ({ id: t.id, ...worldRect(t), size: t.size }));
+}
+
+/** 選択した文字を読む順に一列に並べる（2 文字以上） */
+export function lineUpSelected(): void {
+  const list = selectedTiles();
+  if (list.length > 1) moveTo(list, lineUp(boxesOf(list)));
+}
+
+/** 選択した文字をばらまく（2 文字以上）。押すたびに並びが変わる */
+export function scatterSelected(): void {
+  const list = selectedTiles();
+  if (list.length > 1) moveTo(list, scatter(boxesOf(list)));
 }
 
 export function duplicateSelected(): void {

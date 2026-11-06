@@ -41,6 +41,10 @@ const ICONS: Record<string, string> = {
   grow: '<path d="M3 19 8 6l5 13M5 14h6"/><path d="M19 4v6M16 7h6"/>',
   shrink: '<path d="M3 19 8 6l5 13M5 14h6"/><path d="M16 7h6"/>',
   link: '<path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1 1"/><path d="M14 11a5 5 0 0 0-7.1 0l-2 2a5 5 0 0 0 7.1 7.1l1-1"/>',
+  align:
+    '<path d="M3 12h18"/><rect x="5" y="8" width="3" height="8" rx="1"/><rect x="10.5" y="8" width="3" height="8" rx="1"/><rect x="16" y="8" width="3" height="8" rx="1"/>',
+  shuffle:
+    '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="m4 4 5 5"/>',
   select: '<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 3"/>',
   type: '<path d="M5 7V4h14v3M12 4v16M9 20h6"/>',
   volume:

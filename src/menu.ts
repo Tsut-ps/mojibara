@@ -7,7 +7,9 @@ import { editSelected, openNew } from './editor';
 import {
   deleteSelected,
   duplicateSelected,
+  lineUpSelected,
   resizeSelected,
+  scatterSelected,
   selectAll,
   selectConnected,
   selectedTiles,
@@ -87,6 +89,10 @@ export function showTileMenu(x: number, y: number): void {
   entries.push({ type: 'item', label: '大きく', icon: 'grow', hint: '+', keep: true, run: () => resizeSelected(1.25) });
   entries.push({ type: 'item', label: '小さく', icon: 'shrink', hint: '-', keep: true, run: () => resizeSelected(0.8) });
   if (n === 1) entries.push({ type: 'item', label: '編集', icon: 'edit', hint: 'Enter', run: editSelected });
+  if (n > 1) {
+    entries.push({ type: 'item', label: '一列に整列', icon: 'align', hint: 'L', run: lineUpSelected });
+    entries.push({ type: 'item', label: 'ばらまく', icon: 'shuffle', hint: 'S', run: scatterSelected });
+  }
   entries.push({ type: 'item', label: 'つながった文字も選択', icon: 'link', hint: 'W', run: selectConnected });
   entries.push({ type: 'item', label: '複製', icon: 'copy', hint: `${MOD}D`, run: duplicateSelected });
   entries.push({ type: 'sep' });

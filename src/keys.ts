@@ -8,8 +8,10 @@ import { setSpace } from './pointer';
 import {
   deleteSelected,
   duplicateSelected,
+  lineUpSelected,
   nudgeSelected,
   resizeSelected,
+  scatterSelected,
   select,
   selectAll,
   selectConnected,
@@ -77,6 +79,9 @@ window.addEventListener('keydown', (e) => {
     resizeSelected(0.8);
   } else if (key === 'w' && selected.size && !mod && !e.altKey && !e.shiftKey) {
     selectConnected();
+  } else if (selected.size > 1 && !mod && !e.altKey && !e.shiftKey && (key === 'l' || key === 's')) {
+    if (key === 'l') lineUpSelected();
+    else scatterSelected();
   } else if (e.key === 'Escape') {
     closeMenu();
     if (selected.size) select([]);
