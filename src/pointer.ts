@@ -42,7 +42,7 @@ type Drag =
       orig: Map<string, { x: number; y: number }>;
     }
   | { kind: 'pan'; startX: number; startY: number; vx: number; vy: number; moved: boolean; bgTap: boolean }
-  | { kind: 'marquee'; startX: number; startY: number; base: Set<string> }
+  | { kind: 'marquee'; startX: number; startY: number; base: Set<string>; moved: boolean; additive: boolean }
   | { kind: 'pinch'; dist: number; sx: number; sy: number; s: number; wx: number; wy: number };
 
 const pointers = new Map<number, { x: number; y: number }>();
@@ -119,8 +119,16 @@ stage.addEventListener('pointerdown', (e) => {
     return;
   }
 
-  if (additive) {
-    drag = { kind: 'marquee', startX: e.clientX, startY: e.clientY, base: new Set(selected) };
+  // マウス・ペン：背景のドラッグは範囲選択（Shift などで今の選択に追加）。タッチは下の「画面移動」
+  if (e.pointerType !== 'touch') {
+    drag = {
+      kind: 'marquee',
+      startX: e.clientX,
+      startY: e.clientY,
+      base: new Set(additive ? selected : []),
+      moved: false,
+      additive,
+    };
     return;
   }
 
@@ -174,6 +182,10 @@ stage.addEventListener('pointermove', (e) => {
     view.y = d.vy + dy;
     applyView();
   } else if (d.kind === 'marquee') {
+    if (!d.moved) {
+      if (Math.hypot(dx, dy) < DRAG_PX) return;
+      d.moved = true;
+    }
     const x1 = Math.min(d.startX, e.clientX);
     const y1 = Math.min(d.startY, e.clientY);
     const x2 = Math.max(d.startX, e.clientX);
@@ -240,6 +252,11 @@ function onPointerEnd(e: PointerEvent): void {
     }
   } else if (d.kind === 'marquee') {
     marquee.hidden = true;
+    // 動かさずに離した＝背景のクリック → 選択を外して入力欄を開く（Shift などの追加操作中は何もしない）
+    if (!d.moved && ok && !d.additive) {
+      if (selected.size) select([]);
+      tapPending = true;
+    }
   }
 }
 
