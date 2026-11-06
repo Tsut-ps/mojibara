@@ -15,6 +15,7 @@ import {
   select,
   selected,
 } from './tiles';
+import { playSfx } from './sound';
 import { clamp, ensureFont, measure } from './util';
 import { onViewChange, screenToWorld } from './view';
 
@@ -115,6 +116,7 @@ async function finishEdit(ctx: EditCtx, text: string): Promise<void> {
     await ensureFont(text);
     pushUndo();
     addTiles(layoutText(text, ctx.x, ctx.y, ctx.size, ctx.color));
+    playSfx('place');
     select([]); // 入力直後は未選択にして、一文字ずつ個別にドラッグできるようにする
     changed();
     return;

@@ -20,6 +20,7 @@ import {
   setColor,
 } from './tiles';
 import { askDeleteAll, doRedo, doUndo } from './toolbar';
+import { playSfx } from './sound';
 import { fitAll } from './view';
 
 // 修飾キーの条件。true=押している / false=押していない / 'any'=どちらでもよい
@@ -67,7 +68,13 @@ export const commands = {
     run: doRedo,
   },
   selectAll: { id: 'selectAll', label: 'すべて選択', icon: 'select', shortcut: { key: ['a'], mod: true }, run: selectAll },
-  duplicate: { id: 'duplicate', label: '複製', icon: 'copy', shortcut: { key: ['d'], mod: true }, run: duplicateSelected },
+  duplicate: { id: 'duplicate', label: '複製', icon: 'copy', shortcut: { key: ['d'], mod: true },
+    when: some,
+    run: () => {
+      duplicateSelected();
+      playSfx('duplicate');
+    },
+  },
   delete: {
     id: 'delete',
     label: '削除',
@@ -75,7 +82,10 @@ export const commands = {
     shortcut: { key: ['delete', 'backspace'], mod: 'any', alt: 'any' },
     when: some,
     danger: true,
-    run: deleteSelected,
+    run: () => {
+      deleteSelected();
+      playSfx('delete');
+    },
   },
   grow: {
     id: 'grow',
@@ -120,7 +130,10 @@ export const commands = {
     icon: 'align',
     shortcut: { key: ['l'], shift: false },
     when: many,
-    run: lineUpSelected,
+    run: () => {
+      lineUpSelected();
+      playSfx('arrange');
+    },
   },
   scatter: {
     id: 'scatter',
@@ -128,7 +141,10 @@ export const commands = {
     icon: 'shuffle',
     shortcut: { key: ['s'], shift: false },
     when: many,
-    run: scatterSelected,
+    run: () => {
+      scatterSelected();
+      playSfx('scatter');
+    },
   },
   deselect: {
     id: 'deselect',

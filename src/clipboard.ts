@@ -6,6 +6,7 @@ import { readingRows, type Box } from './arrange';
 import { newId, sanitizeTile, view, tiles, pushUndo, type Tile } from './state';
 import { BASE_SIZE, GAP, MAX_TEXT, MAX_TILES, MID_Y, OFFSET, PAD_X, TILE_H } from './config';
 import { stage } from './dom';
+import { playSfx } from './sound';
 import { showToast } from './toast';
 import { addTiles, changed, deleteSelected, layoutText, select, selectedTiles, worldRect } from './tiles';
 import { clamp, graphemes, measure } from './util';
@@ -117,6 +118,7 @@ function pasteClip(clip: Clip): void {
   );
   select(created.map((t) => t.id));
   changed();
+  playSfx('paste');
 }
 
 function pasteText(raw: string): void {
@@ -135,6 +137,7 @@ function pasteText(raw: string): void {
   const created = addTiles(laid);
   select(created.map((t) => t.id));
   changed();
+  playSfx('paste');
 }
 
 document.addEventListener('copy', (e) => {
@@ -144,7 +147,10 @@ document.addEventListener('copy', (e) => {
 
 document.addEventListener('cut', (e) => {
   if (isTypingTarget(e.target)) return;
-  if (copyTo(e)) deleteSelected();
+  if (copyTo(e)) {
+    deleteSelected();
+    playSfx('delete');
+  }
 });
 
 document.addEventListener('paste', (e) => {
