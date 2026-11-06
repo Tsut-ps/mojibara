@@ -14,6 +14,7 @@
   --menu-bg: #ffffff;
   --line: rgba(0, 0, 0, 0.1);
   --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --lift: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.22));
 
   --c-ink: #25221d;
   --c-red: #d6402b;
@@ -39,6 +40,7 @@
     --menu-bg: #25262b;
     --line: rgba(255, 255, 255, 0.12);
     --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    --lift: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6));
 
     --c-ink: #eceae3;
     --c-red: #ff6b57;
@@ -114,7 +116,10 @@ body {
   line-height: 1.25;
   white-space: pre;
   cursor: grab;
-  transition: background-color 0.12s;
+  transition:
+    background-color 0.12s,
+    scale 0.12s,
+    filter 0.12s;
 }
 /* 細い文字でもつかみやすいように当たり判定を少し広げる */
 .tile::before {
@@ -135,15 +140,23 @@ body {
 .tile.snap-target {
   background: var(--sel-bg);
 }
+.tile.lifted {
+  scale: 1.08;
+  filter: var(--lift);
+}
 .tile.arrange {
   transition:
     translate 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
-    background-color 0.12s;
+    background-color 0.12s,
+    scale 0.12s,
+    filter 0.12s;
 }
 .tile.glide {
   transition:
     translate 0.14s cubic-bezier(0.2, 0.9, 0.3, 1),
-    background-color 0.12s;
+    background-color 0.12s,
+    scale 0.12s,
+    filter 0.12s;
 }
 #stage.dragging .tile {
   cursor: grabbing;

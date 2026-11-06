@@ -1,7 +1,7 @@
 // ポインタ操作（移動・選択・パン・ピンチ・ダブルクリック・長押し・ホイール）
 
 import { pushUndo, tiles, view } from './state';
-import { DRAG_PX, MAX_S, MIN_S, SNAP_PX } from './config';
+import { DRAG_PX, LIFT_MAX, MAX_S, MIN_S, SNAP_PX } from './config';
 import { marquee, stage } from './dom';
 import { openEdit, openNew } from './editor';
 import { closeMenu, showBgMenu, showTileMenu } from './menu';
@@ -23,7 +23,7 @@ import { applyView, cancelTween, screenToWorld, zoomAt } from './view';
 
 function openContextAt(x: number, y: number, tileEl: Element | null): void {
   cancelLongPress();
-  endSnap(drag);
+  endDrag(drag);
   drag = null;
   pointers.clear();
   stage.classList.remove('dragging', 'panning');
@@ -86,11 +86,14 @@ function setSnap(d: TilesDrag, next: Snap | null): void {
   if (next) els.get(next.id)?.classList.add('snap-target');
 }
 
-/** ドラッグが終わる・中断したとき、吸着先の表示を消す */
-function endSnap(d: Drag | null): void {
-  if (d?.kind !== 'tiles' || !d.snap) return;
-  els.get(d.snap.id)?.classList.remove('snap-target');
-  d.snap = null;
+/** ドラッグが終わる・中断したとき、持ち上げ表示と吸着先の表示を消す */
+function endDrag(d: Drag | null): void {
+  if (d?.kind !== 'tiles') return;
+  for (const el of d.moving) el.classList.remove('lifted');
+  if (d.snap) {
+    els.get(d.snap.id)?.classList.remove('snap-target');
+    d.snap = null;
+  }
 }
 
 export function setSpace(on: boolean): void {
@@ -212,6 +215,8 @@ stage.addEventListener('pointermove', (e) => {
       d.group = bounds(list);
       d.others = [...tiles.values()].filter((t) => !d.orig.has(t.id)).map((t) => ({ id: t.id, ...worldRect(t) }));
       d.moving = list.map((t) => els.get(t.id)).filter((el): el is HTMLDivElement => !!el);
+      // 掴んだ文字を持ち上げて見せる（大量だと重くなるので少数のときだけ）
+      if (d.moving.length <= LIFT_MAX) for (const el of d.moving) el.classList.add('lifted');
     }
 
     // 横スナップ（Alt を押している間は無効）
@@ -284,7 +289,7 @@ function onPointerEnd(e: PointerEvent): void {
 
   if (d.kind === 'tiles') {
     if (ok && d.snap) playSnap(); // 吸着したまま離したとき、積み木を置く音を 1 回だけ鳴らす
-    endSnap(d);
+    endDrag(d);
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
     if (d.additive) {
@@ -344,7 +349,7 @@ stage.addEventListener('contextmenu', (e) => {
 
 function startPinch(): void {
   cancelLongPress();
-  endSnap(drag);
+  endDrag(drag);
   stage.classList.remove('dragging', 'panning');
   const [a, b] = [...pointers.values()];
   const sx = (a.x + b.x) / 2;
