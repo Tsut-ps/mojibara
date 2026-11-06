@@ -6,6 +6,7 @@ import { COLORS, view } from '../core/state';
 import { exportFile, importFile } from '../ui/data';
 import { editSelected } from '../ui/editor';
 import { closeMenu } from '../ui/menu';
+import { select, selectAll, selectConnected, selected } from '../tiles/tiles';
 import {
   deleteSelected,
   duplicateSelected,
@@ -13,12 +14,8 @@ import {
   nudgeSelected,
   resizeSelected,
   scatterSelected,
-  select,
-  selectAll,
-  selectConnected,
-  selected,
   setColor,
-} from '../tiles/tiles';
+} from '../tiles/actions';
 import { askDeleteAll, doRedo, doUndo } from '../ui/toolbar';
 import { playSfx } from '../sound';
 import { fitAll } from '../core/view';

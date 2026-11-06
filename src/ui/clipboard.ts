@@ -8,7 +8,8 @@ import { BASE_SIZE, GAP, MAX_TEXT, MAX_TILES, MID_Y, OFFSET, PAD_X, TILE_H } fro
 import { stage } from '../core/dom';
 import { playSfx } from '../sound';
 import { showToast } from './toast';
-import { addTiles, changed, deleteSelected, layoutText, select, selectedTiles, worldRect } from '../tiles/tiles';
+import { addTiles, changed, layoutText, select, selectedTiles, worldRect } from '../tiles/tiles';
+import { deleteSelected } from '../tiles/actions';
 import { clamp, graphemes, measure } from '../core/util';
 import { screenToWorld } from '../core/view';
 

@@ -5,7 +5,8 @@ import { byId, clearBtn, confirmDlg, redoBtn, svg, undoBtn, zoomLabel } from '..
 import { isEditing, positionEditor } from './editor';
 import { isSoundOn, playSfx, playSnap, setSoundOn } from '../sound';
 import { showToast } from './toast';
-import { changed, deleteAll, onChange, syncAll } from '../tiles/tiles';
+import { changed, onChange, syncAll } from '../tiles/tiles';
+import { deleteAll } from '../tiles/actions';
 import { fitAll, tweenTo, zoomTarget } from '../core/view';
 
 export function syncUi(): void {
