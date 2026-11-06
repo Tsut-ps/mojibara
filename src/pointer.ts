@@ -75,7 +75,7 @@ function cancelLongPress(): void {
   window.clearTimeout(lpTimer);
 }
 
-/** 吸着先が変わった：ぬるっと動かし、吸着したらカチッと鳴らす */
+/** 吸着先が変わった：ぬるっと動かす（音は離したときに鳴らす） */
 function setSnap(d: TilesDrag, next: Snap | null): void {
   if (d.snap) els.get(d.snap.id)?.classList.remove('snap-target');
   d.snap = next;
@@ -84,10 +84,7 @@ function setSnap(d: TilesDrag, next: Snap | null): void {
   d.glideTimer = window.setTimeout(() => {
     for (const el of d.moving) el.classList.remove('glide');
   }, 160);
-  if (next) {
-    els.get(next.id)?.classList.add('snap-target');
-    playSnap();
-  }
+  if (next) els.get(next.id)?.classList.add('snap-target');
 }
 
 /** ドラッグが終わる・中断したとき、吸着先の表示を消す */
@@ -287,6 +284,7 @@ function onPointerEnd(e: PointerEvent): void {
   const ok = e.type === 'pointerup';
 
   if (d.kind === 'tiles') {
+    if (ok && d.snap) playSnap(); // 吸着したまま離したとき、積み木を置く音を 1 回だけ鳴らす
     endSnap(d);
     if (d.moved || !ok) return;
     // ここからは「動かさずに離した」＝タップ
