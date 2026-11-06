@@ -63,12 +63,11 @@ function envelope(g: GainNode, t: number, peak: number, dur: number, attack: num
 }
 
 /**
- * 積み木がはまる音を t 秒の時点から鳴らす。三拍が約 30 ミリ秒でつながる。
+ * 積み木がはまる音を t 秒の時点から鳴らす。三拍が約 25 ミリ秒でつながる。
  * 「か」＝帯域ノイズの当たり、「と」＝低い胴鳴り（音程が落ちる）、
- * 「ち」＝最後の小さな留め金（高めで少し上向き）
- * pitch は 1 前後の値で、毎回少しずつ変えると自然に聞こえる。
+ * 「ち」＝最後の小さな留め金。毎回同じ音にする（ゆらぎなし）。
  */
-export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number, pitch = 1): void {
+export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number): void {
   const out = c.createGain();
   out.gain.value = 0.99;
   out.connect(dest);
@@ -78,7 +77,7 @@ export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number, pitch
     src.buffer = noiseBuffer(c);
     const band = c.createBiquadFilter();
     band.type = 'bandpass';
-    band.frequency.value = hz * pitch;
+    band.frequency.value = hz;
     band.Q.value = 0.8;
     const g = c.createGain();
     envelope(g, at, peak, dur, 0.001);
@@ -89,8 +88,8 @@ export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number, pitch
   const tone = (at: number, from: number, to: number, peak: number, dur: number, attack: number) => {
     const osc = c.createOscillator();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(from * pitch, at);
-    osc.frequency.exponentialRampToValueAtTime(to * pitch, at + dur);
+    osc.frequency.setValueAtTime(from, at);
+    osc.frequency.exponentialRampToValueAtTime(to, at + dur);
     const g = c.createGain();
     envelope(g, at, peak, dur, attack);
     osc.connect(g).connect(out);
@@ -98,11 +97,11 @@ export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number, pitch
     osc.stop(at + dur + 0.02);
   };
 
-  knock(t, 2200, 0.35, 0.012); // か
-  tone(t + 0.004, 900, 260, 0.38, 0.06, 0.002); // と
-  const u = t + 0.032;
-  knock(u, 3000, 0.16, 0.008); // ち
-  tone(u, 2200, 2200 * 1.12, 0.24, 0.024, 0.001);
+  knock(t, 2200, 0.35, 0.01); // か
+  tone(t + 0.003, 900, 260, 0.38, 0.045, 0.002); // と
+  const u = t + 0.024;
+  knock(u, 2800, 0.22, 0.007); // ち
+  tone(u, 1700, 1700, 0.14, 0.018, 0.001);
 }
 
 /** スナップ音。連続して鳴りすぎないよう間隔をあける */
@@ -111,5 +110,5 @@ export function playSnap(): void {
   const now = performance.now();
   if (now - lastAt < 70) return;
   lastAt = now;
-  synthSnap(ctx, ctx.destination, ctx.currentTime, 1 + (Math.random() - 0.5) * 0.12);
+  synthSnap(ctx, ctx.destination, ctx.currentTime);
 }
