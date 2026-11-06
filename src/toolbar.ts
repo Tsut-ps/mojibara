@@ -1,8 +1,9 @@
 // ツールバー・確認ダイアログ・ボタン表示の同期
 
 import { canRedo, canUndo, flushSave, redo, tiles, undo, view } from './state';
-import { byId, clearBtn, confirmDlg, redoBtn, undoBtn, zoomLabel } from './dom';
+import { byId, clearBtn, confirmDlg, redoBtn, svg, undoBtn, zoomLabel } from './dom';
 import { isEditing, positionEditor } from './editor';
+import { isSoundOn, playSnap, setSoundOn } from './sound';
 import { changed, deleteAll, onChange, syncAll } from './tiles';
 import { fitAll, tweenTo, zoomTarget } from './view';
 
@@ -59,6 +60,24 @@ zoomLabel.addEventListener('click', () =>
 );
 
 byId('fit').addEventListener('click', fitAll);
+
+// 効果音のオン/オフ（設定はこのブラウザに保存）
+const soundBtn = byId<HTMLButtonElement>('sound');
+
+function renderSound(): void {
+  const on = isSoundOn();
+  soundBtn.innerHTML = svg(on ? 'volume' : 'volume-off');
+  soundBtn.setAttribute('aria-pressed', String(on));
+  soundBtn.title = on ? '効果音: オン（クリックでオフ）' : '効果音: オフ（クリックでオン）';
+}
+
+soundBtn.addEventListener('click', () => {
+  setSoundOn(!isSoundOn());
+  renderSound();
+  if (isSoundOn()) setTimeout(playSnap, 50); // オンにした合図に 1 回鳴らす
+});
+
+renderSound();
 
 window.addEventListener('resize', positionEditor);
 

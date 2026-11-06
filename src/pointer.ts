@@ -6,6 +6,7 @@ import { marquee, stage } from './dom';
 import { openEdit, openNew } from './editor';
 import { closeMenu, showBgMenu, showTileMenu } from './menu';
 import { findSnap, type Rect, type Snap, type Target } from './snap';
+import { playSnap, unlockAudio } from './sound';
 import {
   bounds,
   bringToFront,
@@ -73,7 +74,7 @@ function cancelLongPress(): void {
   window.clearTimeout(lpTimer);
 }
 
-/** 吸着先が変わった：ぬるっと動かし、吸着先に点線を出す */
+/** 吸着先が変わった：ぬるっと動かし、吸着したらカチッと鳴らす */
 function setSnap(d: TilesDrag, next: Snap | null): void {
   if (d.snap) els.get(d.snap.id)?.classList.remove('snap-target');
   d.snap = next;
@@ -84,6 +85,7 @@ function setSnap(d: TilesDrag, next: Snap | null): void {
   }, 160);
   if (next) {
     els.get(next.id)?.classList.add('snap-target');
+    playSnap();
   }
 }
 
@@ -100,6 +102,7 @@ export function setSpace(on: boolean): void {
 }
 
 stage.addEventListener('pointerdown', (e) => {
+  unlockAudio(); // 音はユーザー操作の中でないと出せない
   cancelTween();
   tapPending = false;
   if (e.button === 2) return; // 右クリックは contextmenu で処理

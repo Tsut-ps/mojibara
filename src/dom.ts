@@ -40,6 +40,9 @@ const ICONS: Record<string, string> = {
   shrink: '<path d="M3 19 8 6l5 13M5 14h6"/><path d="M16 7h6"/>',
   select: '<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 3"/>',
   type: '<path d="M5 7V4h14v3M12 4v16M9 20h6"/>',
+  volume:
+    '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
+  'volume-off': '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/>',
 };
 
 export function svg(name: string): string {
