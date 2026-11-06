@@ -66,7 +66,8 @@ function envelope(g: GainNode, t: number, peak: number, dur: number, attack: num
 /**
  * 積み木がはまる音を t 秒の時点から鳴らす。三拍が約 25 ミリ秒でつながる。
  * 「か」＝帯域ノイズの当たり、「と」＝低い胴鳴り（音程が落ちる）、
- * 「ち」＝最後の小さな留め金。毎回同じ音にする（ゆらぎなし）。
+ * 「ち」＝最後の小さな留め金。「と」はド4に着地し、「ち」はその 2 オクターブ上のド6。
+ * 毎回同じ音にする（ゆらぎなし）。
  */
 export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number): void {
   const out = c.createGain();
@@ -99,10 +100,10 @@ export function synthSnap(c: BaseAudioContext, dest: AudioNode, t: number): void
   };
 
   knock(t, 2200, 0.35, 0.01); // か
-  tone(t + 0.003, 900, 260, 0.38, 0.045, 0.002); // と
+  tone(t + 0.003, 900, 261.63, 0.38, 0.045, 0.002); // と：ド4（261.6Hz）に着地
   const u = t + 0.024;
-  knock(u, 2800, 0.22, 0.007); // ち
-  tone(u, 1700, 1700, 0.14, 0.018, 0.001);
+  knock(u, 1960, 0.22, 0.007); // ち：ド6（1046.5Hz）
+  tone(u, 1046.5, 1046.5, 0.14, 0.018, 0.001);
 }
 
 /** スナップ音。吸着の出入りが細かく続いても 1 回に聞こえるよう、間隔をあける */
