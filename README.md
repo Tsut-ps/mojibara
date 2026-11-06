@@ -30,6 +30,16 @@ npm run build    # dist/ に静的ファイルを生成
 
 ## 構成
 
+- `src/main.ts` 起動（初期化と各モジュールの読み込み）
 - `src/state.ts` データ・履歴（undo/redo）・保存
-- `src/main.ts` 描画と操作
+- `src/tiles.ts` 文字（タイル）の描画・選択・配置・一括操作
+- `src/view.ts` パン・ズーム・ドット背景
+- `src/editor.ts` 入力欄（新規入力 / 一文字編集）
+- `src/pointer.ts` ドラッグ・パン・ピンチ・ホイール・長押し
+- `src/keys.ts` キーボードショートカット
+- `src/menu.ts` 右クリックメニュー
+- `src/toolbar.ts` ツールバー・確認ダイアログ
+- `src/dom.ts` / `src/config.ts` / `src/util.ts` DOM 参照・定数・汎用関数
 - `src/style.css` 見た目（ライト/ダーク自動切替）
+
+依存は一方向です（循環なし）。`tiles` は表示やツールバーを知らず、変更は `onChange` で通知します。
