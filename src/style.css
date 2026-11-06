@@ -209,6 +209,18 @@ body {
 #empty small {
   font-size: 13px;
 }
+/* 案内の文言をマウス（ダブルクリック）とタッチ（タップ）で切り替える */
+#empty .coarse {
+  display: none;
+}
+@media (pointer: coarse) {
+  #empty .fine {
+    display: none;
+  }
+  #empty .coarse {
+    display: inline;
+  }
+}
 body:not(.is-empty) #empty {
   display: none;
 }
