@@ -1,11 +1,20 @@
 // キーボードショートカット
 
-import { view } from './state';
+import { COLORS, view } from './state';
 import { confirmDlg } from './dom';
 import { editSelected } from './editor';
 import { closeMenu } from './menu';
 import { setSpace } from './pointer';
-import { deleteSelected, duplicateSelected, nudgeSelected, select, selectAll, selected } from './tiles';
+import {
+  deleteSelected,
+  duplicateSelected,
+  nudgeSelected,
+  resizeSelected,
+  select,
+  selectAll,
+  selected,
+  setColor,
+} from './tiles';
 import { doRedo, doUndo } from './toolbar';
 
 // 矢印キー移動の 1 回の量（画面上の px）。Shift で大きく動かす
@@ -56,6 +65,15 @@ window.addEventListener('keydown', (e) => {
     const [ax, ay] = ARROWS[e.key];
     const step = (e.shiftKey ? NUDGE_BIG_PX : NUDGE_PX) / view.s;
     nudgeSelected(ax * step, ay * step);
+  } else if (selected.size && !mod && !e.altKey && !e.shiftKey && /^[1-8]$/.test(e.key)) {
+    // 数字キーで色（メニューの色の並び順）
+    setColor(COLORS[Number(e.key) - 1].key);
+  } else if (selected.size && !mod && !e.altKey && (e.key === '+' || e.key === '=')) {
+    e.preventDefault();
+    resizeSelected(1.25);
+  } else if (selected.size && !mod && !e.altKey && e.key === '-') {
+    e.preventDefault();
+    resizeSelected(0.8);
   } else if (e.key === 'Escape') {
     closeMenu();
     if (selected.size) select([]);
