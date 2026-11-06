@@ -15,7 +15,6 @@ export function onViewChange(fn: () => void): void {
 
 export function applyView(): void {
   world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.s})`;
-  world.style.setProperty('--inv', String(1 / view.s));
 
   // ドットは画面上で細かすぎず粗すぎない間隔になるよう 2 倍/半分に切り替える
   let gap = GRID * view.s;

@@ -7,7 +7,8 @@
   --text: #2a2823;
   --muted: #8a8576;
   --accent: #2f6fed;
-  --sel-bg: rgba(47, 111, 237, 0.13);
+  --sel-bg: rgba(42, 40, 35, 0.14);
+  --sel-line: rgba(42, 40, 35, 0.28);
   --hover-bg: rgba(42, 40, 35, 0.07);
   --panel: rgba(255, 255, 255, 0.86);
   --menu-bg: #ffffff;
@@ -31,7 +32,8 @@
     --text: #e9e7e0;
     --muted: #8f8d96;
     --accent: #7aa7ff;
-    --sel-bg: rgba(122, 167, 255, 0.18);
+    --sel-bg: rgba(255, 255, 255, 0.16);
+    --sel-line: rgba(255, 255, 255, 0.3);
     --hover-bg: rgba(255, 255, 255, 0.09);
     --panel: rgba(36, 37, 42, 0.86);
     --menu-bg: #25262b;
@@ -125,15 +127,13 @@ body {
 }
 .tile.selected {
   background: var(--sel-bg);
-  /* 拡大率に関わらず見た目 1.5px */
-  outline: calc(1.5px * var(--inv, 1)) solid var(--accent);
 }
 .tile.editing {
   visibility: hidden;
 }
-/* 横スナップの吸着先（点線）と、吸着・解除のときのぬるっとした動き */
+/* 横スナップの吸着先（選択と同じ灰色）と、吸着・解除のときのぬるっとした動き */
 .tile.snap-target {
-  outline: calc(1.5px * var(--inv, 1)) dashed var(--accent);
+  background: var(--sel-bg);
 }
 .tile.glide {
   transition:
@@ -161,7 +161,7 @@ body {
   position: fixed;
   z-index: 5;
   pointer-events: none;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--sel-line);
   background: var(--sel-bg);
 }
 
@@ -175,10 +175,9 @@ body {
   padding: 0 0.06em;
   border: 0;
   border-radius: 0.22em;
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline: 0;
   background: var(--sel-bg);
-  caret-color: var(--accent);
+  caret-color: var(--text);
   font-family: var(--font);
   font-weight: 500;
   line-height: 1.45;

@@ -89,7 +89,7 @@ function setSnap(d: TilesDrag, next: Snap | null): void {
   }
 }
 
-/** ドラッグが終わる・中断したとき、吸着先の点線表示を消す */
+/** ドラッグが終わる・中断したとき、吸着先の表示を消す */
 function endSnap(d: Drag | null): void {
   if (d?.kind !== 'tiles' || !d.snap) return;
   els.get(d.snap.id)?.classList.remove('snap-target');
