@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>もじばら</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body class="is-empty">
+    <div id="stage">
+      <div id="world"></div>
+    </div>
+    <div id="marquee" hidden></div>
+
+    <div id="empty">
+      <p>どこかをクリックして文字を入力</p>
+      <small>Enter で確定すると、一文字ずつバラバラになります</small>
+    </div>
+
+    <textarea
+      id="editor"
+      hidden
+      wrap="off"
+      rows="1"
+      spellcheck="false"
+      autocomplete="off"
+      autocapitalize="off"
+      aria-label="文字を入力"
+    ></textarea>
+
+    <div class="bar bar-top">
+      <button class="btn" id="undo" title="元に戻す" aria-label="元に戻す"><span data-icon="undo"></span></button>
+      <button class="btn" id="redo" title="やり直す" aria-label="やり直す"><span data-icon="redo"></span></button>
+      <span class="sep"></span>
+      <button class="btn danger" id="clear" title="すべて削除">
+        <span data-icon="trash"></span><span class="label">すべて削除</span>
+      </button>
+      <span class="sep"></span>
+      <button class="btn" id="help-btn" popovertarget="help" title="使い方" aria-label="使い方">
+        <span data-icon="help"></span>
+      </button>
+    </div>
+
+    <div class="bar bar-zoom">
+      <button class="btn" id="zoom-out" title="縮小" aria-label="縮小"><span data-icon="minus"></span></button>
+      <button class="btn zoom-label" id="zoom-reset" title="100% に戻す">100%</button>
+      <button class="btn" id="zoom-in" title="拡大" aria-label="拡大"><span data-icon="plus"></span></button>
+      <span class="sep"></span>
+      <button class="btn" id="fit" title="全体を表示" aria-label="全体を表示"><span data-icon="fit"></span></button>
+    </div>
+
+    <div id="menu" role="menu" hidden></div>
+
+    <dialog id="confirm">
+      <form method="dialog">
+        <h2>すべて削除しますか？</h2>
+        <p><span id="confirm-count">0</span> 文字が消えます。直後なら Ctrl/⌘+Z で戻せます。</p>
+        <div class="actions">
+          <button class="btn" value="cancel" autofocus>キャンセル</button>
+          <button class="btn primary" value="ok">すべて削除</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="help" popover>
+      <h2>使い方</h2>
+      <dl>
+        <dt>クリック</dt>
+        <dd>その場で入力。Enter で確定（Shift+Enter で改行）</dd>
+        <dt>ドラッグ</dt>
+        <dd>文字を移動。背景ドラッグで画面を移動</dd>
+        <dt>ダブルクリック</dt>
+        <dd>一文字を編集</dd>
+        <dt>右クリック / 長押し</dt>
+        <dd>色・大きさ・複製・削除のメニュー</dd>
+        <dt>Shift+クリック / ドラッグ</dt>
+        <dd>複数選択</dd>
+        <dt>ホイール / ピンチ</dt>
+        <dd>拡大縮小</dd>
+        <dt>Space+ドラッグ</dt>
+        <dd>画面を移動</dd>
+        <dt>Ctrl/⌘ + Z / Shift+Z</dt>
+        <dd>元に戻す / やり直す</dd>
+        <dt>Ctrl/⌘ + A / D、Delete</dt>
+        <dd>全選択 / 複製 / 削除</dd>
+      </dl>
+      <p class="note">内容はこのブラウザに自動保存されます。</p>
+    </div>
+  </body>
+</html>
