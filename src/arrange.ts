@@ -15,8 +15,8 @@ export type Positions = Map<string, { x: number; y: number }>;
 
 const cyOf = (b: Box) => b.y + b.h / 2;
 
-/** 読む順（上の行から、各行は左から右）に並べる */
-export function readingOrder(boxes: Box[]): Box[] {
+/** 読む順（上の行から、各行は左から右）に、行ごとにまとめて返す */
+export function readingRows(boxes: Box[]): Box[][] {
   const byY = [...boxes].sort((a, b) => cyOf(a) - cyOf(b));
   const rows: Box[][] = [];
   for (const b of byY) {
@@ -30,8 +30,12 @@ export function readingOrder(boxes: Box[]): Box[] {
     }
     rows.push([b]);
   }
-  return rows.flatMap((r) => r.sort((a, b) => a.x - b.x));
+  for (const r of rows) r.sort((a, b) => a.x - b.x);
+  return rows;
 }
+
+/** 読む順（上の行から、各行は左から右）に並べる */
+export const readingOrder = (boxes: Box[]): Box[] => readingRows(boxes).flat();
 
 function extent(boxes: Box[]) {
   let x1 = Infinity;

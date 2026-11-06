@@ -40,7 +40,7 @@ export function newId(): string {
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
-function sanitize(raw: unknown): Tile | null {
+export function sanitizeTile(raw: unknown): Tile | null {
   if (!raw || typeof raw !== 'object') return null;
   const t = raw as Record<string, unknown>;
   if (typeof t.id !== 'string' || typeof t.ch !== 'string' || !t.ch) return null;
@@ -70,7 +70,7 @@ export function load(): void {
     const d = JSON.parse(raw);
     if (Array.isArray(d.tiles)) {
       for (const r of d.tiles) {
-        const t = sanitize(r);
+        const t = sanitizeTile(r);
         if (t) tiles.set(t.id, t);
       }
     }
@@ -125,7 +125,7 @@ const snapshot = () => JSON.stringify([...tiles.values()]);
 function restore(json: string): void {
   tiles.clear();
   for (const r of JSON.parse(json)) {
-    const t = sanitize(r);
+    const t = sanitizeTile(r);
     if (t) tiles.set(t.id, t);
   }
   recomputeZ();

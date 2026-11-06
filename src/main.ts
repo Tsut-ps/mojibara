@@ -8,6 +8,7 @@ import { applyView } from './view';
 import './editor';
 import './pointer';
 import './keys';
+import './clipboard';
 
 load();
 
