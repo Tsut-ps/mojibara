@@ -64,10 +64,9 @@ let drag: Drag | null = null;
 
 let spaceDown = false;
 
-let tapPending = false; // 背景をタップした → click で入力欄を開く（iOS でキーボードを出すため）
+let tapPending = false; // 選択のない背景をタップした → click で入力欄を開く（iOS でキーボードを出すため）
 
 let lastTap: { id: string; t: number; x: number; y: number } | null = null;
-let lastBgClick: { t: number; x: number; y: number } | null = null; // マウスの背景クリック（ダブルクリック判定用）
 
 let lpTimer = 0;
 
@@ -314,24 +313,14 @@ function onPointerEnd(e: PointerEvent): void {
   } else if (d.kind === 'pan') {
     if (d.bgTap && !d.moved && ok) {
       if (selected.size) select([]);
-      tapPending = true;
+      else tapPending = true;
     }
   } else if (d.kind === 'marquee') {
     marquee.hidden = true;
-    // 動かさずに離した＝背景のクリック → 選択を外す。ダブルクリックで入力欄を開く（Shift などの追加操作中は何もしない）
+    // 動かさずに離した＝背景のクリック。選択があれば解除だけ、なければ入力欄を開く（Shift などの追加操作中は何もしない）
     if (!d.moved && ok && !d.additive) {
       if (selected.size) select([]);
-      const now = performance.now();
-      if (
-        lastBgClick &&
-        now - lastBgClick.t < 400 &&
-        Math.hypot(e.clientX - lastBgClick.x, e.clientY - lastBgClick.y) < 10
-      ) {
-        lastBgClick = null;
-        tapPending = true;
-      } else {
-        lastBgClick = { t: now, x: e.clientX, y: e.clientY };
-      }
+      else tapPending = true;
     }
   }
 }
